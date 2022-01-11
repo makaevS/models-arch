@@ -28,7 +28,7 @@ type SearchDefaultModels =
 
 type SearchMethods = {
   handleChange: (value: string) => void;
-  submit: () => void;
+  handleSubmit: () => void;
 }
 
 type SearchDefaultMethods = CreateMethods<Search>;
@@ -37,7 +37,7 @@ export const createDefaultHandleChange = (model: Search) => (value: string) => {
   model.displayable.label = value;
 }
 
-export const createDefaultSubmit = (model: Search) => () => {
+export const createDefaultHandleSubmit = (model: Search) => () => {
   model.displayable.value = model.displayable.label;
 }
 
@@ -54,7 +54,7 @@ export const createSearch = (
   } = (params as SearchDefaultModels) ?? {};
   const {
     createHandleChange = createDefaultHandleChange,
-    createSubmit = createDefaultSubmit,
+    createHandleSubmit = createDefaultHandleSubmit,
   } = params ?? {};
   const model: ModelProto<Search> = makeAutoObservable({
     disableable: disableable ?? createDisableable(disableableDefault),
@@ -62,9 +62,9 @@ export const createSearch = (
       displayableDefault ?? { value: '' }
     ),
     handleChange: () => null,
-    submit: () => null
+    handleSubmit: () => null
   })
   model.handleChange = createHandleChange(model as Search);
-  model.submit = createSubmit(model as Search);
+  model.handleSubmit = createHandleSubmit(model as Search);
   return model as Search;
 }
