@@ -13,12 +13,12 @@ const TableSearch: React.FC<TableSearchProps> = observer(({
     },
     displayable,
     handleChange,
-    submit
+    handleSubmit
   } = search;
   return (
     <form onSubmit={event => {
       event.preventDefault();
-      submit();
+      handleSubmit();
     }}>
       <Observer>
         {() => {
