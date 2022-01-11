@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { CreateMethods, ModelProto, With } from "..";
+import { CreateMethods, Internals, With } from "..";
 
 /**
  * `allowSelect` - Shows if model can be selected.
@@ -8,9 +8,9 @@ import { CreateMethods, ModelProto, With } from "..";
  */
 export type Selectable = {
   /** Shows if model can be selected. */
-  allowSelect: boolean;
+  readonly allowSelect: boolean;
   /** Shows if model selected. */
-  selected: boolean;
+  readonly selected: boolean;
 } & SelectableMethods;
 
 /** Model that has `Selectable`. */
@@ -27,16 +27,16 @@ export type WithSelectableDefault =
   With<SelectableDefault, 'selectableDefault'>;
 
 type SelectableMethods = {
-  handleChange: (value: boolean) => void;
+  handleSelected: (value: boolean) => void;
 }
 
 type SelectableDefaultMethods = CreateMethods<Selectable>;
 
-export const createDefaultHandleChange = (model: Selectable) => (value: boolean) => {
+export const createDefaultHandleSelected = (internals: Internals<Selectable>) => (value: boolean) => {
   if(value){
-    if(model.allowSelect) model.selected = value;
+    if(internals.allowSelect) internals.selected = value;
   } else {
-    model.selected = value;
+    internals.selected = value;
   }
 }
 
@@ -47,13 +47,13 @@ export const createSelectable = (
   const {
     allowSelect = true,
     selected = false,
-    createHandleChange = createDefaultHandleChange
+    createHandleSelected = createDefaultHandleSelected
   } = params ?? {};
-  const model: ModelProto<Selectable> = makeAutoObservable({
+  const internals: Internals<Selectable> = makeAutoObservable({
     allowSelect,
     selected,
-    handleChange: () => null
+    handleSelected: () => null
   });
-  model.handleChange = createHandleChange(model as Selectable);
-  return model as Selectable;
+  internals.handleSelected = createHandleSelected(internals);
+  return internals as Selectable;
 };

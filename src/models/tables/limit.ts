@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { CreateMethods, ModelProto, With } from "..";
+import { CreateMethods, Internals, With } from "..";
 import { createDisableable, WithDisableable, WithDisableableDefault } from "../features/disableable";
 import { createSelect, WithSelect, WithSelectDefault } from "../select";
 
@@ -31,8 +31,8 @@ type LimitMethods = {
 
 type LimitDefaultMethods = CreateMethods<Limit>;
 
-export const createDefaultHandleChange = (model: Limit) => (value: number): void => {
-  model.select.selected = value;
+export const createDefaultHandleChange = (model: Internals<Limit>) => (value: number): void => {
+  if(model.select) model.select.selected = value;
 }
 
 const limitSelectDefault = {
@@ -52,7 +52,7 @@ export const createLimit = (params?: LimitDefault): Limit => {
   const {
     createHandleChange = createDefaultHandleChange
   } = params ?? {};
-  const model: ModelProto<Limit> = makeAutoObservable({
+  const model: Internals<Limit> = makeAutoObservable({
     disableable: disableable ?? createDisableable(disableableDefault),
     select: select ?? createSelect(selectDefault ?? limitSelectDefault),
     handleChange: () => null

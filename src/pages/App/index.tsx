@@ -35,7 +35,6 @@ const createAppModel = () => {
   const radioGroup = createSelect({
     selected: radioOptions[0],
     options: radioOptions,
-    disposable: disposable
   });
   const limit = createLimit({
     disableable: disableable

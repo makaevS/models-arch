@@ -13,7 +13,7 @@ export type CreateModel<T> = () => T;
 export type CreateMethods<T> = {
   [K in keyof T as T[K] extends Function
     ? `create${Capitalize<string & K>}`
-    : never]: (model: T) => T[K]
+    : never]: (internals: Internals<T>) => T[K]
 }
 
 /** Utility type that converts given type into part of model with given key. */
@@ -26,8 +26,8 @@ export type With<T, K extends string> = {
  * 
  * Essential since MobX require all object properties exist before makeObservable.
  */
-export type ModelProto<T> = {
-  [key in keyof T]: T[key] | null | (() => void);
+export type Internals<T> = {
+  -readonly[K in keyof T]: T[K] | (T[K] extends Function ? (() => null) : null);
 }
 
 const modelsCache = new Map<string, unknown>();

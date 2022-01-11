@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { CreateMethods, ModelProto, With } from "..";
+import { CreateMethods, Internals, With } from "..";
 import { createDisableable, WithDisableable, WithDisableableDefault } from "../features/disableable";
 import {
   createDisplayable,
@@ -33,12 +33,12 @@ type SearchMethods = {
 
 type SearchDefaultMethods = CreateMethods<Search>;
 
-export const createDefaultHandleChange = (model: Search) => (value: string) => {
-  model.displayable.label = value;
+export const createDefaultHandleChange = (model: Internals<Search>) => (value: string) => {
+  if(model.displayable) model.displayable.label = value;
 }
 
-export const createDefaultHandleSubmit = (model: Search) => () => {
-  model.displayable.value = model.displayable.label;
+export const createDefaultHandleSubmit = (model: Internals<Search>) => () => {
+  if(model.displayable) model.displayable.value = model.displayable.label;
 }
 
 export const createSearch = (
@@ -56,7 +56,7 @@ export const createSearch = (
     createHandleChange = createDefaultHandleChange,
     createHandleSubmit = createDefaultHandleSubmit,
   } = params ?? {};
-  const model: ModelProto<Search> = makeAutoObservable({
+  const model: Internals<Search> = makeAutoObservable({
     disableable: disableable ?? createDisableable(disableableDefault),
     displayable: displayable ?? createDisplayable(
       displayableDefault ?? { value: '' }

@@ -21,7 +21,7 @@ const Radio = observer(<T,>({ model }: RadioProps<T>) => {
             value={displayable.value as unknown as undefined}
             disabled={!selectable.allowSelect}
             checked={selectable.selected}
-            onChange={ action(() => selectable.selected = true) }
+            onChange={ () => selectable.handleSelected(true) }
           />
         )}
       </Observer>

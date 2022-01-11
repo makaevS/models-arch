@@ -1,6 +1,5 @@
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { With } from ".";
-import { WithDisposable } from "./features/disposable";
 import { SelectOption } from "./selectOption";
 
 export type Select<T, K extends T | SelectOption<T>> = {
@@ -13,9 +12,7 @@ export type WithSelect<
   K extends T | SelectOption<T>
 > = With<Select<T, K>, 'select'>;
 
-export type SelectDefault<T, K extends T | SelectOption<T>> =
-  & Select<T, K>
-  & Partial<WithDisposable>;
+export type SelectDefault<T, K extends T | SelectOption<T>> = Select<T, K>
 
 export type WithSelectDefault<
   T, K extends T | SelectOption<T>
@@ -27,42 +24,26 @@ export const createSelect = <T, K extends T | SelectOption<T>>(
   const {
     selected,
     options,
-    disposable
   } = params;
-  const model = makeAutoObservable({
+  const model: Select<T, K> = makeAutoObservable({
     selected,
-    options
+    options: []
   });
-  if(disposable){
-    disposable.add(
-      reaction(
-        () => {
-          const selectedOptions = (model.options as SelectOption<T>[]).filter(
-            ({ selectable: { selected } }) => selected
-          );
-          return selectedOptions;
-        },
-        (selectedOptions) => {
-          if(!selectedOptions.length){
-            model.selected = undefined;
-            return;
-          }
-          if(selectedOptions.length === 1){
-            if(selectedOptions[0] === model.selected) return;
-            model.selected = (selectedOptions[0] as K);
-            return;
-          }
-          const newSelected = (selectedOptions.find(
-            option => option !== model.selected
-          ) ?? model.selected) as K;
-          if((model.selected as SelectOption<T> | null) !== null){
-            (model.selected as SelectOption<T>).selectable.selected =
-              false;
-          }
-          model.selected = newSelected;
+  for(const option of options){
+    if(typeof option !== 'object'){
+      model.options.push(option);
+    } else {
+      const selectOption = option as SelectOption<T>;
+      const oldHandler = selectOption.selectable.handleSelected;
+      selectOption.selectable.handleSelected = (value: boolean) => {
+        if(value && selectOption !== model.selected){
+          (model.selected as SelectOption<T>).selectable.handleSelected(false);
+          model.selected = selectOption as K;
         }
-      )
-    )
+        oldHandler(value);
+      }
+      model.options.push(option);
+    }
   }
   return model;
 }
