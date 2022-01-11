@@ -2,22 +2,22 @@ import { makeAutoObservable } from "mobx";
 import { With } from "..";
 
 /** `isNew` - Shows if model is new. */
-type Newable = {
+export type Newable = {
   /** Shows if model is new. */
   isNew: boolean;
 }
 
 /** Model that has `Newable`. */
-type WithNewable = With<Newable, 'newable'>;
+export type WithNewable = With<Newable, 'newable'>;
 
 /** Default `newable` object. */
-type NewableDefault = Partial<Newable>;
+export type NewableDefault = Partial<Newable>;
 
 /** Object that has `newable` default. */
-type WithNewableDefault = With<NewableDefault, 'newableDefault'>;
+export type WithNewableDefault = With<NewableDefault, 'newableDefault'>;
 
 /** Function that creates `newable` observable. */
-const createNewable = (
+export const createNewable = (
   params?: NewableDefault
 ): Newable => {
   const {
@@ -27,11 +27,3 @@ const createNewable = (
     isNew
   });
 }
-
-export type {
-  Newable,
-  WithNewable,
-  NewableDefault,
-  WithNewableDefault
-};
-export { createNewable };

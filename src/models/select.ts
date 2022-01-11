@@ -3,25 +3,25 @@ import { With } from ".";
 import { WithDisposable } from "./features/disposable";
 import { SelectOption } from "./selectOption";
 
-type Select<T, K extends T | SelectOption<T>> = {
+export type Select<T, K extends T | SelectOption<T>> = {
   selected?: K,
   options: K[]
 }
 
-type WithSelect<
+export type WithSelect<
   T,
   K extends T | SelectOption<T>
 > = With<Select<T, K>, 'select'>;
 
-type SelectDefault<T, K extends T | SelectOption<T>> =
+export type SelectDefault<T, K extends T | SelectOption<T>> =
   & Select<T, K>
   & Partial<WithDisposable>;
 
-type WithSelectDefault<
+export type WithSelectDefault<
   T, K extends T | SelectOption<T>
 > = With<SelectDefault<T, K>, 'selectDefault'>;
 
-const createSelect = <T, K extends T | SelectOption<T>>(
+export const createSelect = <T, K extends T | SelectOption<T>>(
   params: SelectDefault<T, K>,
 ): Select<T, K> => {
   const {
@@ -66,11 +66,3 @@ const createSelect = <T, K extends T | SelectOption<T>>(
   }
   return model;
 }
-
-export type {
-  Select,
-  WithSelect,
-  SelectDefault,
-  WithSelectDefault
-}
-export { createSelect }

@@ -11,23 +11,23 @@ import {
   SelectableDefault
 } from "./features/selectable";
 
-type SelectOption<T> = {
+export type SelectOption<T> = {
   displayable: Displayable<T>,
   selectable: Selectable
 }
 
-type WithSelectOption<T> = With<SelectOption<T>, 'selectOption'>;
+export type WithSelectOption<T> = With<SelectOption<T>, 'selectOption'>;
 
-type SelectOptionDefault<T> = {
+export type SelectOptionDefault<T> = {
   displayable: DisplayableDefault<T>,
   selectable?: SelectableDefault
 }
 
-type WithSelectOptionDefault<T> = With<
+export type WithSelectOptionDefault<T> = With<
   SelectOptionDefault<T>, 'selectOptionDefault'
 >;
 
-const createSelectOption = <T>(
+export const createSelectOption = <T>(
   params: SelectOptionDefault<T>
 ): SelectOption<T> => {
   const {
@@ -39,11 +39,3 @@ const createSelectOption = <T>(
     selectable: createSelectable(selectable)
   });
 }
-
-export type {
-  SelectOption,
-  WithSelectOption,
-  SelectOptionDefault,
-  WithSelectOptionDefault
-};
-export { createSelectOption };

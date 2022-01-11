@@ -6,7 +6,7 @@ import { With } from "..";
  * 
  * `selected` - Shows if model selected.
  */
- type Selectable = {
+export type Selectable = {
   /** Shows if model can be selected. */
   allowSelect: boolean;
   /** Shows if model selected. */
@@ -14,16 +14,17 @@ import { With } from "..";
 }
 
 /** Model that has `Selectable`. */
-type WithSelectable = With<Selectable, 'selectable'>;
+export type WithSelectable = With<Selectable, 'selectable'>;
 
 /** Default `selectable` object. */
-type SelectableDefault = Partial<Selectable>;
+export type SelectableDefault = Partial<Selectable>;
 
 /** Object that has `selectable` default. */
-type WithSelectableDefault = With<SelectableDefault, 'selectableDefault'>;
+export type WithSelectableDefault =
+  With<SelectableDefault, 'selectableDefault'>;
 
 /** Function that creates `selectable` observable. */
-const createSelectable = (
+export const createSelectable = (
   params?: SelectableDefault
 ): Selectable => {
   const {
@@ -35,11 +36,3 @@ const createSelectable = (
     selected,
   });
 };
-
-export type {
-  Selectable,
-  WithSelectable,
-  SelectableDefault,
-  WithSelectableDefault
-};
-export { createSelectable };

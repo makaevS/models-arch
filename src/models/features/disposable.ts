@@ -6,7 +6,7 @@ import { With } from "..";
  * 
  * `dispose` - Function that disposes model and all model's disposers.
  */
- type Disposable = {
+export type Disposable = {
   /** Function that add disposer to array of disposers. */
   add(disposer: () => void): void;
   /** Function that disposes model and all model's disposers. */
@@ -14,16 +14,13 @@ import { With } from "..";
 }
 
 /** Model that has `Disposable`. */
-type WithDisposable = With<Disposable, 'disposable'>;
+export type WithDisposable = With<Disposable, 'disposable'>;
 
 /** Function that creates `disposable` observable. */
-const createDisposable = (): Disposable => {
+export const createDisposable = (): Disposable => {
   const disposers: (() => void)[] = [];
   return makeAutoObservable({
     add: (disposer) => disposers.push(disposer),
     dispose: () => disposers.forEach(disposer => disposer())
   });
 }
-
-export type { Disposable, WithDisposable };
-export { createDisposable };

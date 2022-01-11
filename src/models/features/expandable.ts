@@ -6,7 +6,7 @@ import { With } from "..";
  * 
  * `expanded` - Shows if model marked.
  */
- type Expandable = {
+export type Expandable = {
   /** Shows if model can be marked as expanded. */
   allowExpand: boolean;
   /** Shows if model marked. */
@@ -14,16 +14,17 @@ import { With } from "..";
 }
 
 /** Model that has `Expandable`. */
-type WithExpandable = With<Expandable, 'expandable'>;
+export type WithExpandable = With<Expandable, 'expandable'>;
 
 /** Default `expandable` object. */
-type ExpandableDefault = Partial<Expandable>;
+export type ExpandableDefault = Partial<Expandable>;
 
 /** Object that has `expandable` default. */
-type WithExpandableDefault = With<ExpandableDefault, 'expandableDefault'>;
+export type WithExpandableDefault =
+  With<ExpandableDefault, 'expandableDefault'>;
 
 /** Function that creates `expandable` observable. */
-const createExpandable = (
+export const createExpandable = (
   params?: ExpandableDefault
 ): Expandable => {
   const {
@@ -35,11 +36,3 @@ const createExpandable = (
     expanded
   });
 }
-
-export type {
-  Expandable,
-  WithExpandable,
-  ExpandableDefault,
-  WithExpandableDefault
-};
-export { createExpandable };

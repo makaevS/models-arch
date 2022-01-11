@@ -7,17 +7,17 @@ import {
 import { WithDisposable } from './features/disposable';
 
 /** Function that returns model instance. */
-type CreateModel<T> = () => T;
+export type CreateModel<T> = () => T;
 
 /** Utility type that return creational type for given methods. */
-type CreateMethods<T> = {
+export type CreateMethods<T> = {
   [K in keyof T as T[K] extends Function
     ? `create${Capitalize<string & K>}`
     : never]: (model: T) => T[K]
 }
 
 /** Utility type that converts given type into part of model with given key. */
-type With<T, K extends string> = {
+export type With<T, K extends string> = {
   [key in K]: T
 }
 
@@ -26,7 +26,7 @@ type With<T, K extends string> = {
  * 
  * Essential since MobX require all object properties exist before makeObservable.
  */
-type ModelProto<T> = {
+export type ModelProto<T> = {
   [key in keyof T]: T[key] | null | (() => void);
 }
 
@@ -39,7 +39,7 @@ const modelsCache = new Map<string, unknown>();
  * 
  * Either returns model instance from cache or create new instance, cache and return it.
  */
-const getModel = <T>(id: string, create: CreateModel<T>) => {
+export const getModel = <T>(id: string, create: CreateModel<T>) => {
   const cachedModel = modelsCache.get(id) as T | undefined;
   if(cachedModel) return cachedModel;
   const newModel = create();
@@ -52,7 +52,7 @@ const getModel = <T>(id: string, create: CreateModel<T>) => {
  * 
  * Removes model from cache.
  */
-const removeModel = (id: string) => {
+export const removeModel = (id: string) => {
   modelsCache.delete(id);
 }
 
@@ -73,7 +73,7 @@ const removeModel = (id: string) => {
  * 
  * Passing `false` to `autoDispose` will disable default auto-disposing and return `dispose` function in tuple alongside model instance. It's required to keep model instance intact (cached) regardless of parent component's lifecycle.
  */
-const useModel = <
+export const useModel = <
   T extends Partial<WithDisposable>,
   K extends string | undefined
 >(
@@ -109,13 +109,3 @@ const useModel = <
 
   return [state.model, state.autoDispose ? undefined : dispose];
 }
-
-
-export type { 
-  CreateModel,
-  CreateMethods,
-  With,
-  WithDisposable,
-  ModelProto
-};
-export { useModel };

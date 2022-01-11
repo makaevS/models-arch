@@ -8,7 +8,7 @@ import { With } from "..";
  * 
  * `edited` - Shows if model was edited.
  */
- type Editable = {
+export type Editable = {
   /** Shows if model can be edited. */
   allowEdit: boolean;
   /** Shows if model is in edit right now. */
@@ -18,16 +18,16 @@ import { With } from "..";
 }
 
 /** Model that has `Editable`. */
-type WithEditable = With<Editable, 'editable'>;
+export type WithEditable = With<Editable, 'editable'>;
 
 /** Default `editable` object. */
-type EditableDefault = Partial<Editable>;
+export type EditableDefault = Partial<Editable>;
 
 /** Object that has `editable` default. */
-type WithEditableDefault = With<EditableDefault, 'editableDefault'>;
+export type WithEditableDefault = With<EditableDefault, 'editableDefault'>;
 
 /** Function that creates `editable` observable. */
-const createEditable = (
+export const createEditable = (
   params?: EditableDefault
 ): Editable => {
   const {
@@ -41,11 +41,3 @@ const createEditable = (
     edited
   });
 };
-
-export type {
-  Editable,
-  WithEditable,
-  EditableDefault,
-  WithEditableDefault
-};
-export { createEditable };

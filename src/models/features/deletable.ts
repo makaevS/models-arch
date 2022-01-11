@@ -8,7 +8,7 @@ import { With } from "..";
  * 
  * `deleted` - Shows if model was deleted.
  */
-type Deletable = {
+export type Deletable = {
   /** Shows if model can be deleted. */
   allowDelete: boolean;
   /** Shows if model is in deletion right now. */
@@ -18,16 +18,16 @@ type Deletable = {
 }
 
 /** Model that has `Deletable`. */
-type WithDeletable = With<Deletable, 'deletable'>;
+export type WithDeletable = With<Deletable, 'deletable'>;
 
 /** Default `deletable` object. */
-type DeletableDefault = Partial<Deletable>;
+export type DeletableDefault = Partial<Deletable>;
 
 /** Object that has `deletable` default. */
-type WithDeletableDefault = With<DeletableDefault, 'deletableDefault'>;
+export type WithDeletableDefault = With<DeletableDefault, 'deletableDefault'>;
 
 /** Function that creates `deletable` observable. */
-const createDeletable = (
+export const createDeletable = (
   params?: DeletableDefault
 ): Deletable => {
   const {
@@ -41,11 +41,3 @@ const createDeletable = (
     deleted,
   });
 };
-
-export type {
-  Deletable,
-  WithDeletable,
-  DeletableDefault,
-  WithDeletableDefault
-};
-export { createDeletable };

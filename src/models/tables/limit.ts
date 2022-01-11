@@ -3,19 +3,19 @@ import { CreateMethods, ModelProto, With } from "..";
 import { createDisableable, WithDisableable, WithDisableableDefault } from "../features/disableable";
 import { createSelect, WithSelect, WithSelectDefault } from "../select";
 
-type Limit =
+export type Limit =
   & LimitHandlers
   & WithDisableable
   & WithSelect<number, number>;
 
-type WithLimit = With<Limit, 'limit'>;
+export type WithLimit = With<Limit, 'limit'>;
 
-type LimitDefault = Partial<LimitDefaultHandlers & (
+export type LimitDefault = Partial<LimitDefaultHandlers & (
   | LimitDefaultParams
   | LimitDefaultModels
 )>;
 
-type WithLimitDefault = With<LimitDefault, 'limit'>;
+export type WithLimitDefault = With<LimitDefault, 'limit'>;
 
 type LimitDefaultParams =
   & WithDisableableDefault
@@ -31,7 +31,7 @@ type LimitHandlers = {
 
 type LimitDefaultHandlers = CreateMethods<Limit>;
 
-const createDefaultHandleChange = (model: Limit) => (value: number): void => {
+export const createDefaultHandleChange = (model: Limit) => (value: number): void => {
   model.select.selected = value;
 }
 
@@ -40,7 +40,7 @@ const limitSelectDefault = {
   options: [10, 25, 50, 75, 100]
 };
 
-const createLimit = (params?: LimitDefault): Limit => {
+export const createLimit = (params?: LimitDefault): Limit => {
   const {
     disableableDefault,
     selectDefault
@@ -59,16 +59,4 @@ const createLimit = (params?: LimitDefault): Limit => {
   });
   model.handleChange = createHandleChange(model as Limit)
   return model as Limit;
-}
-
-export type {
-  Limit,
-  WithLimit,
-  LimitDefault,
-  WithLimitDefault
-}
-export {
-  createLimit,
-  createDefaultHandleChange,
-  limitSelectDefault
 }

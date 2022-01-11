@@ -7,16 +7,16 @@ import {
   WithDisplayableDefault
 } from "../features/displayable";
 
-type Search = WithDisableable & WithDisplayable<string> & SearchHandlers;
+export type Search = WithDisableable & WithDisplayable<string> & SearchHandlers;
 
-type WithSearch = With<Search, 'search'>;
+export type WithSearch = With<Search, 'search'>;
 
-type SearchDefault = Partial<SearchDefaultHandlers & (
+export type SearchDefault = Partial<SearchDefaultHandlers & (
   | SearchDefaultParams
   | SearchDefaultModels
 )>;
 
-type WithSearchDefault = With<SearchDefault, 'searchDefault'>;
+export type WithSearchDefault = With<SearchDefault, 'searchDefault'>;
 
 type SearchDefaultParams =
   & WithDisableableDefault
@@ -33,15 +33,15 @@ type SearchHandlers = {
 
 type SearchDefaultHandlers = CreateMethods<Search>;
 
-const createDefaultHandleChange = (model: Search) => (value: string) => {
+export const createDefaultHandleChange = (model: Search) => (value: string) => {
   model.displayable.label = value;
 }
 
-const createDefaultSubmit = (model: Search) => () => {
+export const createDefaultSubmit = (model: Search) => () => {
   model.displayable.value = model.displayable.label;
 }
 
-const createSearch = (
+export const createSearch = (
   params?: SearchDefault
 ): Search => {
   const {
@@ -68,15 +68,3 @@ const createSearch = (
   model.submit = createSubmit(model as Search);
   return model as Search;
 }
-
-export type {
-  Search,
-  WithSearch,
-  SearchDefault,
-  WithSearchDefault
-}
-export {
-  createSearch,
-  createDefaultHandleChange,
-  createDefaultSubmit,
-};

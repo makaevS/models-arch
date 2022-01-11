@@ -6,7 +6,7 @@ import { With } from "..";
  * 
  * `value` - Value linked to label.
  */
- type Displayable<T> = {
+export type Displayable<T> = {
   /** Displayable label. */
   label: string;
   /** Value linked to label. */
@@ -14,20 +14,20 @@ import { With } from "..";
 }
 
 /** Model that has `Displayable`. */
-type WithDisplayable<T> = With<Displayable<T>, 'displayable'>;
+export type WithDisplayable<T> = With<Displayable<T>, 'displayable'>;
 
 /** Default `displayable` object. */
-type DisplayableDefault<T> =
+export type DisplayableDefault<T> =
   | Displayable<T>
   | Omit<Displayable<T>, 'label'>
 
 /** Object that has `displayable` default. */
-type WithDisplayableDefault<T> = With<
+export type WithDisplayableDefault<T> = With<
   DisplayableDefault<T>, 'displayableDefault'
 >;
 
 /** Function that creates `displayable` observable. */
-const createDisplayable = <T>(
+export const createDisplayable = <T>(
   params: DisplayableDefault<T>
 ): Displayable<T> => {
   const {
@@ -39,11 +39,3 @@ const createDisplayable = <T>(
     value
   });
 };
-
-export type {
-  Displayable,
-  WithDisplayable,
-  DisplayableDefault,
-  WithDisplayableDefault
-};
-export { createDisplayable };

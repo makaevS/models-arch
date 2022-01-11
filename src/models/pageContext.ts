@@ -1,5 +1,5 @@
 import React, { createContext, useContext, createElement } from 'react';
-import { WithDisposable } from '.';
+import { WithDisposable } from './features/disposable';
 
 const PageContext = createContext<WithDisposable | null>(null);
 
@@ -10,7 +10,7 @@ const PageContext = createContext<WithDisposable | null>(null);
  * 
  * Intended to be used for cases where page element's model require disposable model in order to register own disposer.
  */
-const usePageContext = () => {
+export const usePageContext = () => {
   const model = useContext(PageContext);
 
   if(!model) throw new Error('Page model context must be provided!');
@@ -19,9 +19,7 @@ const usePageContext = () => {
 }
 
 /** Context provider for `PageContext`. */
-const PageProvider: React.FC<{ model: WithDisposable; }> = ({
+export const PageProvider: React.FC<{ model: WithDisposable; }> = ({
   model,
   children 
 }) => createElement(PageContext.Provider, { value: model }, children);
-
-export { usePageContext, PageProvider };
