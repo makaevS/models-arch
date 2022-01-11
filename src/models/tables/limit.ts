@@ -4,13 +4,13 @@ import { createDisableable, WithDisableable, WithDisableableDefault } from "../f
 import { createSelect, WithSelect, WithSelectDefault } from "../select";
 
 export type Limit =
-  & LimitHandlers
+  & LimitMethods
   & WithDisableable
   & WithSelect<number, number>;
 
 export type WithLimit = With<Limit, 'limit'>;
 
-export type LimitDefault = Partial<LimitDefaultHandlers & (
+export type LimitDefault = Partial<LimitDefaultMethods & (
   | LimitDefaultParams
   | LimitDefaultModels
 )>;
@@ -25,11 +25,11 @@ type LimitDefaultModels =
   & WithDisableable
   & WithSelect<number, number>;
 
-type LimitHandlers = {
+type LimitMethods = {
   handleChange: (value: number) => void;
 };
 
-type LimitDefaultHandlers = CreateMethods<Limit>;
+type LimitDefaultMethods = CreateMethods<Limit>;
 
 export const createDefaultHandleChange = (model: Limit) => (value: number): void => {
   model.select.selected = value;

@@ -7,11 +7,11 @@ import {
   WithDisplayableDefault
 } from "../features/displayable";
 
-export type Search = WithDisableable & WithDisplayable<string> & SearchHandlers;
+export type Search = WithDisableable & WithDisplayable<string> & SearchMethods;
 
 export type WithSearch = With<Search, 'search'>;
 
-export type SearchDefault = Partial<SearchDefaultHandlers & (
+export type SearchDefault = Partial<SearchDefaultMethods & (
   | SearchDefaultParams
   | SearchDefaultModels
 )>;
@@ -26,12 +26,12 @@ type SearchDefaultModels =
   & WithDisableable
   & WithDisplayable<string>
 
-type SearchHandlers = {
+type SearchMethods = {
   handleChange: (value: string) => void;
   submit: () => void;
 }
 
-type SearchDefaultHandlers = CreateMethods<Search>;
+type SearchDefaultMethods = CreateMethods<Search>;
 
 export const createDefaultHandleChange = (model: Search) => (value: string) => {
   model.displayable.label = value;
