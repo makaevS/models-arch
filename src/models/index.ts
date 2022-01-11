@@ -6,26 +6,38 @@ import {
 } from 'react';
 import { WithDisposable } from './features/disposable';
 
-/** Function that returns model instance. */
 export type CreateModel<T> = () => T;
 
-/** Utility type that return creational type for given methods. */
 export type CreateMethods<T> = {
   [K in keyof T as T[K] extends Function
     ? `create${Capitalize<string & K>}`
     : never]: (internals: Internals<T>) => T[K]
 }
 
-/** Utility type that converts given type into part of model with given key. */
+export type ChangeMethods<T, N extends keyof T = never> = {
+  [
+    K in keyof T as
+    K extends N ?
+    never
+    : `change${Capitalize<string & K>}`
+  ]-?: (value: T[K]) => void;
+}
+
+export type OmitMethods<T, N extends keyof T = never> = {
+  [
+    K in keyof T as
+    K extends N
+    ? K
+    : T[K] extends Function
+      ? never
+      : K
+  ]: T[K]
+}
+
 export type With<T, K extends string> = {
   [key in K]: T
 }
 
-/** 
- * Utility type that makes all fields nullable.
- * 
- * Essential since MobX require all object properties exist before makeObservable.
- */
 export type Internals<T> = {
   -readonly[K in keyof T]: T[K] | (T[K] extends Function ? (() => null) : null);
 }

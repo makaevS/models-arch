@@ -1,43 +1,68 @@
 import { makeAutoObservable } from "mobx";
-import { With } from "..";
+import {
+  ChangeMethods,
+  CreateMethods,
+  Internals,
+  OmitMethods,
+  With
+} from "..";
 
-/**
- * `allowEdit` - Shows if model can be edited.
- * 
- * `editing` - Shows if model is in edit right now.
- * 
- * `edited` - Shows if model was edited.
- */
-export type Editable = {
-  /** Shows if model can be edited. */
+export type Editable =
+& Readonly<EditableFields>
+& EditableMethods
+
+export type WithEditable = With<Editable, 'editable'>;
+
+export type EditableDefault = Partial<
+  & OmitMethods<Editable>
+  & EditableDefaultMethods
+>;
+
+export type WithEditableDefault = With<EditableDefault, 'editableDefault'>;
+
+type EditableFields = {
   allowEdit: boolean;
-  /** Shows if model is in edit right now. */
   editing: boolean;
-  /** Shows if model was edited. */
   edited: boolean;
 }
 
-/** Model that has `Editable`. */
-export type WithEditable = With<Editable, 'editable'>;
+type EditableMethods = ChangeMethods<EditableFields>;
 
-/** Default `editable` object. */
-export type EditableDefault = Partial<Editable>;
+type EditableDefaultMethods = CreateMethods<Editable>;
 
-/** Object that has `editable` default. */
-export type WithEditableDefault = With<EditableDefault, 'editableDefault'>;
+export const createDefaultChangeAllowEdit = (internals: Internals<Editable>) => (value: boolean) => {
+  internals.allowEdit = value;
+}
 
-/** Function that creates `editable` observable. */
+export const createDefaultChangeEdited = (internals: Internals<Editable>) => (value: boolean) => {
+  internals.edited = value;
+}
+
+export const createDefaultChangeEditing = (internals: Internals<Editable>) => (value: boolean) => {
+  internals.editing = value;
+}
+
 export const createEditable = (
   params?: EditableDefault
 ): Editable => {
   const {
     allowEdit = true,
-    editing = false,
     edited = false,
+    editing = false,
+    createChangeAllowEdit = createDefaultChangeAllowEdit,
+    createChangeEdited = createDefaultChangeEdited,
+    createChangeEditing = createDefaultChangeEditing
   } = params ?? {};
-  return makeAutoObservable({
+  const internals: Internals<Editable> = makeAutoObservable({
     allowEdit,
     editing,
-    edited
+    edited,
+    changeAllowEdit: () => null,
+    changeEdited: () => null,
+    changeEditing: () => null
   });
+  internals.changeAllowEdit = createChangeAllowEdit(internals);
+  internals.changeEdited = createChangeEdited(internals);
+  internals.changeEditing = createChangeEditing(internals);
+  return internals as Editable;
 };

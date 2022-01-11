@@ -1,29 +1,48 @@
 import { makeAutoObservable } from "mobx";
-import { With } from "..";
+import {
+  ChangeMethods,
+  CreateMethods,
+  Internals,
+  OmitMethods,
+  With
+} from "..";
 
-/** `isNew` - Shows if model is new. */
-export type Newable = {
-  /** Shows if model is new. */
-  isNew: boolean;
-}
+export type Newable =
+  & Readonly<NewableFields>
+  & NewableMethods
 
-/** Model that has `Newable`. */
 export type WithNewable = With<Newable, 'newable'>;
 
-/** Default `newable` object. */
-export type NewableDefault = Partial<Newable>;
+export type NewableDefault = Partial<
+  & OmitMethods<Newable>
+  & NewableDefaultMethods
+>;
 
-/** Object that has `newable` default. */
 export type WithNewableDefault = With<NewableDefault, 'newableDefault'>;
 
-/** Function that creates `newable` observable. */
+type NewableFields = {
+  isNew: boolean;
+};
+
+type NewableMethods = ChangeMethods<NewableFields>;
+
+type NewableDefaultMethods = CreateMethods<Newable>;
+
+export const createDefaultChangeIsNew = (internals: Internals<Newable>) => (value: boolean) => {
+  internals.isNew = value;
+}
+
 export const createNewable = (
   params?: NewableDefault
 ): Newable => {
   const {
     isNew = false,
+    createChangeIsNew = createDefaultChangeIsNew
   } = params ?? {};
-  return makeAutoObservable({
-    isNew
+  const internals: Internals<Newable> = makeAutoObservable({
+    isNew,
+    changeIsNew: () => null
   });
+  internals.changeIsNew = createChangeIsNew(internals);
+  return internals as Newable;
 }

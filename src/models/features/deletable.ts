@@ -1,43 +1,66 @@
 import { makeAutoObservable } from "mobx";
-import { With } from "..";
+import {
+  ChangeMethods,
+  CreateMethods,
+  Internals,
+  OmitMethods,
+  With
+} from "..";
 
-/**
- * `allowDelete` - Shows if model can be deleted.
- * 
- * `deleting` - Shows if model is in deletion right now.
- * 
- * `deleted` - Shows if model was deleted.
- */
-export type Deletable = {
-  /** Shows if model can be deleted. */
-  allowDelete: boolean;
-  /** Shows if model is in deletion right now. */
-  deleting: boolean;
-  /** Shows if model was deleted. */
-  deleted: boolean;
-}
+export type Deletable = Readonly<DeletableFields> & DeletableMethods;
 
-/** Model that has `Deletable`. */
 export type WithDeletable = With<Deletable, 'deletable'>;
 
-/** Default `deletable` object. */
-export type DeletableDefault = Partial<Deletable>;
+export type DeletableDefault = Partial<
+  & OmitMethods<Deletable>
+  & DeletableDefaultMethods
+>;
 
-/** Object that has `deletable` default. */
 export type WithDeletableDefault = With<DeletableDefault, 'deletableDefault'>;
 
-/** Function that creates `deletable` observable. */
+type DeletableFields = {
+  allowDelete: boolean;
+  deleted: boolean;
+  deleting: boolean;
+}
+
+type DeletableMethods = ChangeMethods<DeletableFields>;
+
+type DeletableDefaultMethods = CreateMethods<Deletable>;
+
+export const createDefaultChangeAllowDelete = (internals: Internals<Deletable>) => (value: boolean) => {
+  internals.allowDelete = value;
+}
+
+export const createDefaultChangeDeleted = (internals: Internals<Deletable>) => (value: boolean) => {
+  internals.deleted = value;
+}
+
+export const createDefaultChangeDeleting = (internals: Internals<Deletable>) => (value: boolean) => {
+  internals.deleting = value;
+}
+
 export const createDeletable = (
   params?: DeletableDefault
 ): Deletable => {
   const {
     allowDelete = true,
-    deleting = false,
     deleted = false,
+    deleting = false,
+    createChangeAllowDelete = createDefaultChangeAllowDelete,
+    createChangeDeleted = createDefaultChangeDeleted,
+    createChangeDeleting = createDefaultChangeDeleting
   } = params ?? {};
-  return makeAutoObservable({
+  const internals: Internals<Deletable> = makeAutoObservable({
     allowDelete,
     deleting,
     deleted,
+    changeAllowDelete: () => null,
+    changeDeleted: () => null,
+    changeDeleting: () => null
   });
+  internals.changeAllowDelete = createChangeAllowDelete(internals);
+  internals.changeDeleted = createChangeDeleted(internals);
+  internals.changeDeleting = createChangeDeleting(internals);
+  return internals as Deletable;
 };

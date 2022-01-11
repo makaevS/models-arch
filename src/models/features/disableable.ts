@@ -1,29 +1,49 @@
 import { makeAutoObservable } from "mobx";
-import { With } from "..";
+import {
+  ChangeMethods,
+  CreateMethods,
+  Internals,
+  OmitMethods,
+  With
+} from "..";
 
-/** `disabled` - Shows if model is disabled. */
-export type Disableable = {
-  /** Shows if model is disabled. */
+export type Disableable =
+  & Readonly<DisableableFields>
+  & DisableableMethods;
+
+export type WithDisableable = With<Disableable, 'disableable'>;
+
+export type DisableableDefault = Partial<
+  & OmitMethods<Disableable>
+  & DisableableDefaultMethods
+>;
+
+export type WithDisableableDefault =
+  With<DisableableDefault, 'disableableDefault'>;
+
+type DisableableFields = {
   disabled: boolean;
 }
 
-/** Model that has `Disableable`. */
-export type WithDisableable = With<Disableable, 'disableable'>;
+type DisableableMethods = ChangeMethods<DisableableFields>;
 
-/** Default `disableable` object. */
-export type DisableableDefault = Partial<Disableable>;
+type DisableableDefaultMethods = CreateMethods<Disableable>;
 
-/** Object that has `disableable` default. */
-export type WithDisableableDefault = With<DisableableDefault, 'disableableDefault'>;
+export const createDefaultChangeDisabled = (internals: Internals<Disableable>) => (value: boolean) => {
+  internals.disabled = value;
+}
 
-/** Function that creates `disableable` observable. */
 export const createDisableable = (
   params?: DisableableDefault
 ): Disableable => {
   const {
     disabled = false,
+    createChangeDisabled = createDefaultChangeDisabled
   } = params ?? {};
-  return makeAutoObservable({
-    disabled
+  const internals: Internals<Disableable> = makeAutoObservable({
+    disabled,
+    changeDisabled: () => null
   });
+  internals.changeDisabled = createChangeDisabled(internals);
+  return internals as Disableable;
 }

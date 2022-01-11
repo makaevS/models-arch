@@ -36,18 +36,18 @@ const createAppModel = () => {
     selected: radioOptions[0],
     options: radioOptions,
   });
+  const oldChangeSelected = radioGroup.changeSelected;
+  radioGroup.changeSelected = (selected) => {
+    const { displayable: { value = true } } = selected ?? { displayable: {} };
+    disableable.changeDisabled(value);
+    oldChangeSelected(selected);
+  }
   const limit = createLimit({
     disableable: disableable
   });
   const search = createSearch({
     disableable: disableable
   });
-  disposable.add(
-    reaction(
-      () => radioGroup.selected?.displayable.value,
-      (value) => disableable.disabled = !!value
-    )
-  )
   disposable.add(
     reaction(
       () => radioGroup.selected?.displayable.value,

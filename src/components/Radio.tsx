@@ -1,17 +1,14 @@
 import React from 'react';
 import { Observer, observer } from 'mobx-react-lite';
-import { action } from 'mobx';
-import { SelectOption } from '../models/selectOption';
+import { WithSelectOption } from '../models/selectOption';
 
-type RadioProps<T> = {
-  model: SelectOption<T>
-}
+type RadioProps<T> = WithSelectOption<T>;
 
-const Radio = observer(<T,>({ model }: RadioProps<T>) => {
+const Radio = observer(<T,>({ selectOption }: RadioProps<T>) => {
   const {
     displayable,
     selectable
-  } = model;
+  } = selectOption;
   return (
     <label>
       <Observer>
@@ -21,7 +18,7 @@ const Radio = observer(<T,>({ model }: RadioProps<T>) => {
             value={displayable.value as unknown as undefined}
             disabled={!selectable.allowSelect}
             checked={selectable.selected}
-            onChange={ () => selectable.handleSelected(true) }
+            onChange={ () => selectable.changeSelected(true) }
           />
         )}
       </Observer>

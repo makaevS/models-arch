@@ -5,7 +5,7 @@ import { WithSelect } from '../models/select';
 import Radio from './Radio';
 import { SelectOption } from '../models/selectOption';
 
-type RadioGroupProps<T> = WithSelect<T, SelectOption<T>>
+type RadioGroupProps<T> = WithSelect<SelectOption<T>>
 
 const RadioGroup = observer(<T,>({
   select
@@ -16,7 +16,7 @@ const RadioGroup = observer(<T,>({
       {options.map((option, index) => (
         <Radio
           key={index}
-          model={option}
+          selectOption={option}
         />
       ))}
     </fieldset>

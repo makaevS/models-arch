@@ -1,38 +1,40 @@
 import { makeAutoObservable } from "mobx";
-import { CreateMethods, Internals, With } from "..";
+import {
+  ChangeMethods,
+  CreateMethods,
+  Internals,
+  OmitMethods,
+  With
+} from "..";
 
-/**
- * `allowSelect` - Shows if model can be selected.
- * 
- * `selected` - Shows if model selected.
- */
-export type Selectable = {
-  /** Shows if model can be selected. */
-  readonly allowSelect: boolean;
-  /** Shows if model selected. */
-  readonly selected: boolean;
-} & SelectableMethods;
+export type Selectable =
+  & Readonly<SelectableFields>
+  & SelectableMethods;
 
-/** Model that has `Selectable`. */
 export type WithSelectable = With<Selectable, 'selectable'>;
 
-/** Default `selectable` object. */
 export type SelectableDefault = Partial<
-  & Omit<Selectable, 'handleChange'>
+  & OmitMethods<Selectable>
   & SelectableDefaultMethods
 >;
 
-/** Object that has `selectable` default. */
 export type WithSelectableDefault =
   With<SelectableDefault, 'selectableDefault'>;
 
-type SelectableMethods = {
-  handleSelected: (value: boolean) => void;
+type SelectableFields = {
+  allowSelect: boolean;
+  selected: boolean;
 }
+
+type SelectableMethods = ChangeMethods<SelectableFields>;
 
 type SelectableDefaultMethods = CreateMethods<Selectable>;
 
-export const createDefaultHandleSelected = (internals: Internals<Selectable>) => (value: boolean) => {
+export const createDefaultChangeAllowSelected = (internals: Internals<Selectable>) => (value: boolean) => {
+  internals.allowSelect = value;
+}
+
+export const createDefaultChangeSelected = (internals: Internals<Selectable>) => (value: boolean) => {
   if(value){
     if(internals.allowSelect) internals.selected = value;
   } else {
@@ -40,20 +42,22 @@ export const createDefaultHandleSelected = (internals: Internals<Selectable>) =>
   }
 }
 
-/** Function that creates `selectable` observable. */
 export const createSelectable = (
   params?: SelectableDefault
 ): Selectable => {
   const {
     allowSelect = true,
     selected = false,
-    createHandleSelected = createDefaultHandleSelected
+    createChangeAllowSelect = createDefaultChangeAllowSelected,
+    createChangeSelected = createDefaultChangeSelected
   } = params ?? {};
   const internals: Internals<Selectable> = makeAutoObservable({
     allowSelect,
     selected,
-    handleSelected: () => null
+    changeAllowSelect: () => null,
+    changeSelected: () => null
   });
-  internals.handleSelected = createHandleSelected(internals);
+  internals.changeAllowSelect = createChangeAllowSelect(internals);
+  internals.changeSelected = createChangeSelected(internals);
   return internals as Selectable;
 };

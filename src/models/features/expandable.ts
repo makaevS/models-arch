@@ -1,38 +1,59 @@
 import { makeAutoObservable } from "mobx";
-import { With } from "..";
+import {
+  ChangeMethods,
+  CreateMethods,
+  Internals,
+  OmitMethods,
+  With
+} from "..";
 
-/**
- * `allowExpand` - Shows if model can be marked as expanded.
- * 
- * `expanded` - Shows if model marked.
- */
-export type Expandable = {
-  /** Shows if model can be marked as expanded. */
-  allowExpand: boolean;
-  /** Shows if model marked. */
-  expanded: boolean;
-}
+export type Expandable = 
+  & Readonly<ExpandableFields>
+  & ExpandableMethods;
 
-/** Model that has `Expandable`. */
 export type WithExpandable = With<Expandable, 'expandable'>;
 
-/** Default `expandable` object. */
-export type ExpandableDefault = Partial<Expandable>;
+export type ExpandableDefault = Partial<
+  & OmitMethods<Expandable>
+  & ExpandableDefaultMethods
+>;
 
-/** Object that has `expandable` default. */
 export type WithExpandableDefault =
   With<ExpandableDefault, 'expandableDefault'>;
 
-/** Function that creates `expandable` observable. */
+type ExpandableFields = {
+  allowExpand: boolean;
+  expanded: boolean;
+};
+
+type ExpandableMethods = ChangeMethods<ExpandableFields>;
+
+type ExpandableDefaultMethods = CreateMethods<Expandable>;
+
+export const createDefaultChangeAllowExpand = (internals: Internals<Expandable>) => (value: boolean) => {
+  internals.allowExpand = value;
+}
+
+export const createDefaultChangeExpanded = (internals: Internals<Expandable>) => (value: boolean) => {
+  internals.expanded = value;
+}
+
 export const createExpandable = (
   params?: ExpandableDefault
 ): Expandable => {
   const {
     allowExpand = true,
     expanded = false,
+    createChangeAllowExpand = createDefaultChangeAllowExpand,
+    createChangeExpanded = createDefaultChangeExpanded
   } = params ?? {};
-  return makeAutoObservable({
+  const internals: Internals<Expandable> = makeAutoObservable({
     allowExpand,
-    expanded
+    expanded,
+    changeAllowExpand: () => null,
+    changeExpanded: () => null
   });
+  internals.changeAllowExpand = createChangeAllowExpand(internals);
+  internals.changeExpanded = createChangeExpanded(internals);
+  return internals as Expandable;
 }

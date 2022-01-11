@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { CreateMethods, Internals, With } from "..";
+import { ChangeMethods, CreateMethods, Internals, OmitMethods, With } from "..";
 import { createDisableable, WithDisableable, WithDisableableDefault } from "../features/disableable";
 import {
   createDisplayable,
@@ -7,14 +7,16 @@ import {
   WithDisplayableDefault
 } from "../features/displayable";
 
-export type Search = WithDisableable & WithDisplayable<string> & SearchMethods;
+export type Search =
+  & Readonly<SearchFields>
+  & SearchMethods;
 
 export type WithSearch = With<Search, 'search'>;
 
-export type SearchDefault = Partial<SearchDefaultMethods & (
+export type SearchDefault = Partial<SearchDefaultMethods & OmitMethods<(
   | SearchDefaultParams
   | SearchDefaultModels
-)>;
+)>>;
 
 export type WithSearchDefault = With<SearchDefault, 'searchDefault'>;
 
@@ -26,19 +28,25 @@ type SearchDefaultModels =
   & WithDisableable
   & WithDisplayable<string>
 
-type SearchMethods = {
-  handleChange: (value: string) => void;
-  handleSubmit: () => void;
-}
+type SearchFields =
+  & WithDisableable
+  & WithDisplayable<string>;
+
+type SearchMethods = 
+  & ChangeMethods<SearchFields, 'disableable' | 'displayable'>
+  & {
+    handleChange: (value: string) => void;
+    handleSubmit: () => void;
+  }
 
 type SearchDefaultMethods = CreateMethods<Search>;
 
 export const createDefaultHandleChange = (model: Internals<Search>) => (value: string) => {
-  if(model.displayable) model.displayable.label = value;
+  model.displayable?.changeLabel(value);
 }
 
 export const createDefaultHandleSubmit = (model: Internals<Search>) => () => {
-  if(model.displayable) model.displayable.value = model.displayable.label;
+  model.displayable?.changeValue(model.displayable.label);
 }
 
 export const createSearch = (

@@ -1,41 +1,62 @@
 import { makeAutoObservable } from "mobx";
-import { With } from "..";
+import {
+  ChangeMethods,
+  CreateMethods,
+  Internals,
+  OmitMethods,
+  With
+} from "..";
 
-/**
- * `label` - Displayable label.
- * 
- * `value` - Value linked to label.
- */
-export type Displayable<T> = {
-  /** Displayable label. */
+export type Displayable<T> =
+  & Readonly<DisplayableFields<T>>
+  & DisplayableMethods<T>;
+
+export type WithDisplayable<T> =
+  With<Displayable<T>, 'displayable'>;
+
+export type DisplayableDefault<T> =
+  & Pick<OmitMethods<Displayable<T>, 'value'>, 'value'>
+  & Partial<
+    & DisplayableDefaultMethods<T>
+    & Exclude<OmitMethods<Displayable<T>>, 'value'>
+  >;
+
+export type WithDisplayableDefault<T> =
+  With<DisplayableDefault<T>, 'displayableDefault'>;
+
+type DisplayableFields<T> = {
   label: string;
-  /** Value linked to label. */
   value: T;
 }
 
-/** Model that has `Displayable`. */
-export type WithDisplayable<T> = With<Displayable<T>, 'displayable'>;
+type DisplayableMethods<T> = ChangeMethods<DisplayableFields<T>>;
 
-/** Default `displayable` object. */
-export type DisplayableDefault<T> =
-  | Displayable<T>
-  | Omit<Displayable<T>, 'label'>
+type DisplayableDefaultMethods<T> = CreateMethods<Displayable<T>>;
 
-/** Object that has `displayable` default. */
-export type WithDisplayableDefault<T> = With<
-  DisplayableDefault<T>, 'displayableDefault'
->;
+export const createDefaultChangeLabel = <T>(internals: Internals<Displayable<T>>) => (value: string) => {
+  internals.label = value;
+}
 
-/** Function that creates `displayable` observable. */
+export const createDefaultChangeValue = <T>(internals: Internals<Displayable<T>>) => (value: T) => {
+  internals.value = value;
+}
+
 export const createDisplayable = <T>(
   params: DisplayableDefault<T>
 ): Displayable<T> => {
   const {
     label = String(params.value),
     value,
-  } = params as Displayable<T>;
-  return makeAutoObservable({
+    createChangeLabel = createDefaultChangeLabel,
+    createChangeValue = createDefaultChangeValue
+  } = params;
+  const internals: Internals<Displayable<T>> = makeAutoObservable({
     label,
-    value
+    value,
+    changeLabel: () => null,
+    changeValue: () => null
   });
+  internals.changeLabel = createChangeLabel(internals);
+  internals.changeValue = createChangeValue(internals);
+  return internals as Displayable<T>;
 };

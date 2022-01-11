@@ -1,38 +1,52 @@
 import { makeAutoObservable } from "mobx";
-import { CreateMethods, Internals, With } from "..";
-import { createDisableable, WithDisableable, WithDisableableDefault } from "../features/disableable";
-import { createSelect, WithSelect, WithSelectDefault } from "../select";
+import { ChangeMethods, CreateMethods, Internals, OmitMethods, With } from "..";
+import {
+  createDisableable,
+  WithDisableable,
+  WithDisableableDefault
+} from "../features/disableable";
+import {
+  createSelect,
+  WithSelect,
+  WithSelectDefault
+} from "../select";
 
 export type Limit =
   & LimitMethods
   & WithDisableable
-  & WithSelect<number, number>;
+  & WithSelect<number>;
 
 export type WithLimit = With<Limit, 'limit'>;
 
-export type LimitDefault = Partial<LimitDefaultMethods & (
+export type LimitDefault = Partial<LimitDefaultMethods & OmitMethods<(
   | LimitDefaultParams
   | LimitDefaultModels
-)>;
+)>>;
 
 export type WithLimitDefault = With<LimitDefault, 'limit'>;
 
 type LimitDefaultParams =
   & WithDisableableDefault
-  & WithSelectDefault<number, number>;
+  & WithSelectDefault<number>;
 
 type LimitDefaultModels =
   & WithDisableable
-  & WithSelect<number, number>;
+  & WithSelect<number>;
 
-type LimitMethods = {
-  handleChange: (value: number) => void;
-};
+type LimitFields =
+  & WithDisableable
+  & WithSelect<number>;
+
+type LimitMethods =
+  & ChangeMethods<LimitFields, 'disableable' | 'select'>
+  & {
+    handleChange: (value: number) => void;
+  };
 
 type LimitDefaultMethods = CreateMethods<Limit>;
 
 export const createDefaultHandleChange = (model: Internals<Limit>) => (value: number): void => {
-  if(model.select) model.select.selected = value;
+  if(model.select) model.select.changeSelected(value);
 }
 
 const limitSelectDefault = {
