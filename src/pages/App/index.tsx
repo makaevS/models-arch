@@ -2,21 +2,52 @@ import React from 'react';
 import './index.css';
 import logo from './logo.svg';
 import { makeAutoObservable, reaction } from "mobx";
-import { useModel } from '../../models';
+import { Internals, useModel } from '../../models';
 import { PageProvider } from '../../models/pageContext';
 import RadioGroup from '../../components/RadioGroup';
 import TableLimit from '../../components/TableLimit';
 import TableSearch from '../../components/TableSearch';
-import { createDisposable } from "../../models/features/disposable";
-import { createSelect } from "../../models/select";
-import { createSelectOption } from "../../models/selectOption";
-import { createLimit } from '../../models/tables/limit';
-import { createSearch } from '../../models/tables/search';
-import { createDisableable } from '../../models/features/disableable';
+import { createDisposable, WithDisposable } from "../../models/features/disposable";
+import { createSelect, Select } from "../../models/select";
+import { createSelectOption, SelectOption } from "../../models/selectOption";
+import { createLimit, WithLimit } from '../../models/tables/limit';
+import { createSearch, WithSearch } from '../../models/tables/search';
+import { createDisableable, WithDisableable } from '../../models/features/disableable';
+import { Observer } from 'mobx-react-lite';
+import Modal from '../../components/Modal';
+import PeriodForm from '../../components/PeriodForm';
 
-const createAppModel = () => {
-  const disposable = createDisposable();
-  const disableable = createDisableable();
+type AppModel =
+  & {
+    showModal: () => void
+  }
+  & Readonly<
+    & WithDisposable
+    & WithDisableable
+    & WithLimit
+    & WithSearch
+    & {
+      radioGroup: Select<SelectOption<boolean>>,
+      modals: unknown[]
+    }
+  >
+
+const createAppModel = (): AppModel => {
+  const internals: Internals<AppModel> = makeAutoObservable({
+    disposable: createDisposable(),
+    disableable: createDisableable(),
+    limit: null,
+    search: null,
+    radioGroup: null,
+    modals: [],
+    showModal: () => null
+  });
+  internals.limit = createLimit({
+    disableable: (internals as AppModel).disableable
+  });
+  internals.search = createSearch({
+    disableable: (internals as AppModel).disableable
+  });
   const radioOptions = [
     {
       label: 'enabled',
@@ -32,46 +63,39 @@ const createAppModel = () => {
       selected: !index
     }
   }));
-  const radioGroup = createSelect({
+  internals.radioGroup = createSelect({
     selected: radioOptions[0],
     options: radioOptions,
   });
-  const oldChangeSelected = radioGroup.changeSelected;
-  radioGroup.changeSelected = (selected) => {
+  const oldChangeSelected = internals.radioGroup.changeSelected;
+  internals.radioGroup.changeSelected = (selected) => {
     const { displayable: { value = true } } = selected ?? { displayable: {} };
-    disableable.changeDisabled(value);
+    internals.disableable?.changeDisabled(value);
     oldChangeSelected(selected);
   }
-  const limit = createLimit({
-    disableable: disableable
-  });
-  const search = createSearch({
-    disableable: disableable
-  });
-  disposable.add(
+  internals.showModal = () => {
+    internals.modals?.push({});
+  }
+  const model = internals as AppModel;
+  model.disposable.add(
     reaction(
-      () => radioGroup.selected?.displayable.value,
-      (value) => console.log(`Selected option: ${value}`)
-    )
-  )
-  disposable.add(
-    reaction(
-      () => limit.select.selected,
+      () => model.limit.select.selected,
       (value) => console.log(`Table limit: ${value}`)
     )
   )
-  disposable.add(
+  model.disposable.add(
     reaction(
-      () => search.displayable.value,
+      () => model.search.displayable.value,
       (value) => console.log(`Table search: ${value}`)
     )
   )
-  return makeAutoObservable({
-    disposable,
-    radioGroup,
-    limit,
-    search
-  });
+  model.disposable?.add(
+    reaction(
+      () => model.radioGroup.selected?.displayable.value,
+      (value) => console.log(`Selected option: ${value}`)
+    )
+  )
+  return model;
 }
 
 function App() {
@@ -79,7 +103,8 @@ function App() {
   const {
     radioGroup,
     limit,
-    search
+    search,
+    showModal
   } = model;
   return (
     <PageProvider model={model}>
@@ -91,7 +116,19 @@ function App() {
             <TableLimit limit={limit} />
             <TableSearch search={search} />
           </fieldset>
+          <button type='button' onClick={showModal}>show modal</button>
         </header>
+        <Observer>
+          {() => (
+            <>
+              {model.modals.map((modal, index) => (
+                <Modal key={index}>
+                  <PeriodForm />
+                </Modal>
+              ))}
+            </>
+          )}
+        </Observer>
       </div>
     </PageProvider>
   );
