@@ -21,13 +21,13 @@ export const createDefaultChangeSelected = <T>(internals: Internals<Select<T>>) 
 }
 
 export const createSelect = <T>(
-  params: Defaults<Select<T>>,
+  params?: Defaults<Select<T>>,
 ): Instance<Select<T>> => {
   const {
     optionable,
     selected,
     createChangeSelected = createDefaultChangeSelected
-  } = params;
+  } = params ?? {};
   const internals: Internals<Select<T>> = makeAutoObservable({
     optionable: optionable ?? createOptionable(),
     selected,
