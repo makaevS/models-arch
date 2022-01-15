@@ -41,7 +41,6 @@ const createAppModel = (): AppModel => {
   internals.limit = createLimit({
     disableable: (internals as AppModel).disableable
   });
-  console.log(internals.limit)
   internals.search = createSearch({
     disableable: (internals as AppModel).disableable
   });
