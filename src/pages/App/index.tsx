@@ -2,7 +2,7 @@ import React from 'react';
 import './index.css';
 import logo from './logo.svg';
 import { makeAutoObservable, reaction } from "mobx";
-import { Instance, Internals, useModel, With } from '../../models';
+import { Internals, useModel, With } from '../../models';
 import { PageProvider } from '../../models/pageContext';
 import { TableLimit } from '../../components/TableLimit/component';
 import { TableSearch } from '../../components/TableSearch';
@@ -13,9 +13,6 @@ import { createDisableable, Disableable } from '../../models/features/disableabl
 import { Observer } from 'mobx-react-lite';
 import { Modal } from '../../components/Modal';
 import PeriodForm from '../../components/PeriodForm';
-import { createDisplayable } from '../../models/features/displayable';
-import { createSelectable } from '../../models/features/selectable';
-import { createOptionable } from '../../models/features/optionable';
 
 type AppModel =
   & {
