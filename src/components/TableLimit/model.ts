@@ -1,16 +1,16 @@
 import { makeAutoObservable } from "mobx";
 import {
   Instance,
-  InstanceDefault,
+  Defaults,
   Internals,
   MakeModel,
-  WithInstance,
-  WithInstanceDefault,
+  With,
 } from "../../models";
 import {
   createDisableable,
   Disableable,
 } from "../../models/features/disableable";
+import { createOptionable } from "../../models/features/optionable";
 import {
   createSelect,
   Select,
@@ -18,10 +18,9 @@ import {
 
 export type Limit = MakeModel<
   'Limit',
-  WithInstance<Disableable> & WithInstance<Select<number>>,
+  With<Disableable> & With<Select<number>>,
   { handleChange: (value: number) => void },
-  & Partial<WithInstanceDefault<Disableable>>
-  & WithInstanceDefault<Select<number>>,
+  {},
   'disableable' | 'select'
 >;
 
@@ -35,18 +34,21 @@ const limitSelectDefault = {
 };
 
 export const createLimit = (
-  params?: InstanceDefault<Limit>
+  params?: Defaults<Limit>
 ): Instance<Limit> => {
   const {
     disableable,
-    disableableDefault,
     select,
-    selectDefault,
     createHandleChange = createDefaultHandleChange
   } = params ?? {};
   const internals: Internals<Limit> = makeAutoObservable({
-    disableable: disableable ?? createDisableable(disableableDefault),
-    select: select ?? createSelect(selectDefault ?? limitSelectDefault),
+    disableable: disableable ?? createDisableable(),
+    select: select ?? createSelect({
+      selected: limitSelectDefault.selected,
+      optionable: createOptionable({
+        options: limitSelectDefault.options
+      })
+    }),
     handleChange: () => null
   });
   internals.handleChange = createHandleChange(internals);

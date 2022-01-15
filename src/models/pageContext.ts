@@ -1,8 +1,8 @@
 import React, { createContext, useContext, createElement } from 'react';
-import { WithInstance } from '.';
+import { With } from '.';
 import { Disposable } from './features/disposable';
 
-const PageContext = createContext<WithInstance<Disposable> | null>(null);
+const PageContext = createContext<With<Disposable> | null>(null);
 
 /**
  * Custom hook for `PageContext`.
@@ -20,7 +20,7 @@ export const usePageContext = () => {
 }
 
 /** Context provider for `PageContext`. */
-export const PageProvider: React.FC<{ model: WithInstance<Disposable>; }> = ({
+export const PageProvider: React.FC<{ model: With<Disposable>; }> = ({
   model,
   children 
 }) => createElement(PageContext.Provider, { value: model }, children);

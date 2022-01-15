@@ -1,9 +1,9 @@
 import React from 'react';
 import { Observer, observer } from 'mobx-react-lite';
 import { Search } from '.';
-import { WithInstance } from '../../models';
+import { With } from '../../models';
 
-type TableSearchProps = WithInstance<Search>;
+type TableSearchProps = With<Search>;
 
 export const TableSearch: React.FC<TableSearchProps> = observer(({
   search

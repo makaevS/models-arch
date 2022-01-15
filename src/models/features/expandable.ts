@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import {
   Instance,
-  InstanceDefault,
+  Defaults,
   Internals, MakeModel,
 } from "..";
 
@@ -19,7 +19,7 @@ export const createDefaultChangeExpanded = (internals: Internals<Expandable>) =>
 }
 
 export const createExpandable = (
-  params?: InstanceDefault<Expandable>
+  params?: Defaults<Expandable>
 ): Instance<Expandable> => {
   const {
     allowExpand = true,

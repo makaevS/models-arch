@@ -1,9 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { Limit } from '.';
-import { WithInstance } from '../../models';
+import { With } from '../../models';
 
-type TableLimitProps = WithInstance<Limit>;
+type TableLimitProps = With<Limit>;
 
 export const TableLimit: React.FC<TableLimitProps> = observer(({
   limit

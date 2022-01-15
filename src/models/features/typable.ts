@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import {
   Instance,
-  InstanceDefault,
+  Defaults,
   Internals,
   MakeModel
 } from "..";
@@ -15,7 +15,7 @@ export const createDefaultChangeType = <T>(internals: Internals<Typable<T>>) => 
 }
 
 export const createTypable = <T>(
-  params: InstanceDefault<Typable<T>>
+  params: Defaults<Typable<T>>
 ): Instance<Typable<T>> => {
   const {
     type,

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import {
   Instance,
-  InstanceDefault,
+  Defaults,
   Internals, MakeModel
 } from '..';
 
@@ -16,7 +16,7 @@ export const createDefaultChangeOptions = <T>(
 }
 
 export const createOptionable = <T>(
-  params?: InstanceDefault<Optionable<T>>
+  params?: Defaults<Optionable<T>>
 ): Instance<Optionable<T>> => {
   const {
     options = [],

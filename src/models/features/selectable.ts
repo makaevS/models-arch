@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import {
   Instance,
-  InstanceDefault,
+  Defaults,
   Internals,
   MakeModel,
 } from "..";
@@ -28,7 +28,7 @@ export const createDefaultChangeSelected = (
 }
 
 export const createSelectable = (
-  params?: InstanceDefault<Selectable>
+  params?: Defaults<Selectable>
 ): Instance<Selectable> => {
   const {
     allowSelect = true,

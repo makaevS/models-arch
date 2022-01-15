@@ -1,12 +1,20 @@
 import {
   Instance,
-  InstanceDefault,
+  Defaults,
   Internals,
-  WithInstance
+  With,
+  ExtendModel
 } from "../../models";
-import { createOptionable } from "../../models/features/optionable";
 import { Selectable } from "../../models/features/selectable";
 import { createSelect, Select } from "../../models/select";
+
+export type SelectRadio<T extends With<Selectable>> = ExtendModel<
+  Select<T>,
+  {}, {}, {
+    createHandleOptionsChange?: typeof createDefaultHandleOptionsChange,
+    createHandleOptionSelected?: typeof createDefaultHandleOptionSelected,
+  }
+>
 
 export const createDefaultChangeSelected = <T>(
   instance: Internals<Select<T>>
@@ -17,21 +25,21 @@ export const createDefaultChangeSelected = <T>(
 export const createDefaultHandleOptionsChange = <T>(
   internals: Internals<Select<T>>,
   createHandleOptionChange: (
-    internals: Internals<Select<WithInstance<Selectable>>>,
-    option: WithInstance<Selectable>
+    internals: Internals<SelectRadio<With<Selectable>>>,
+    option: With<Selectable>
   ) => (optionSelect: boolean) => void
 ) => {
   const oldChangeOptions = internals.optionable?.changeOptions;
   return (value: T[]) => {
     for(const option in value){
       if(
-        (option as unknown as WithInstance<Selectable>)
+        (option as unknown as With<Selectable>)
           .selectable !== undefined
       ){
-        (option as unknown as WithInstance<Selectable>)
+        (option as unknown as With<Selectable>)
           .selectable.changeSelected = createHandleOptionChange(
-            internals as Internals<Select<WithInstance<Selectable>>>,
-            option as unknown as WithInstance<Selectable>
+            internals as Internals<Select<With<Selectable>>>,
+            option as unknown as With<Selectable>
           )
       }
     }
@@ -40,8 +48,8 @@ export const createDefaultHandleOptionsChange = <T>(
 }
 
 export const createDefaultHandleOptionSelected = (
-  internals: Internals<Select<WithInstance<Selectable>>>,
-  option: WithInstance<Selectable>
+  internals: Internals<Select<With<Selectable>>>,
+  option: With<Selectable>
 ) => {
   const oldHandleSelected = option.selectable.changeSelected;
   return (optionSelected: boolean) => {
@@ -55,31 +63,19 @@ export const createDefaultHandleOptionSelected = (
   }
 }
 
-export type SelectRadioDefault<T> =
-  & InstanceDefault<Select<T>>
-  & {
-    createHandleOptionsChange: typeof createDefaultHandleOptionsChange,
-    createHandleOptionSelected: typeof createDefaultHandleOptionSelected,
-  }
-
-export const createSelectRadio = <T>(
-  params: SelectRadioDefault<T>
-): Instance<Select<T>> => {
+export const createSelectRadio = <T extends With<Selectable>>(
+  params?: Defaults<SelectRadio<T>>
+): Instance<SelectRadio<T>> => {
   const {
     selected,
     optionable,
-    optionableDefault,
     createChangeSelected,
     createHandleOptionsChange = createDefaultHandleOptionsChange,
     createHandleOptionSelected = createDefaultHandleOptionSelected
-  } = params;
-  const optionableModel = optionable ?? createOptionable(
-    optionableDefault
-  );
+  } = params ?? {};
   const internals: Internals<Select<T>> = createSelect({
     selected,
-    optionable: optionableModel,
-    optionableDefault,
+    optionable,
     createChangeSelected
   });
   const model = internals as Instance<Select<T>>;

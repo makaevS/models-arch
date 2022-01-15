@@ -2,32 +2,35 @@ import React from 'react';
 import './index.css';
 import logo from './logo.svg';
 import { makeAutoObservable, reaction } from "mobx";
-import { Internals, useModel } from '../../models';
+import { Instance, Internals, useModel, With } from '../../models';
 import { PageProvider } from '../../models/pageContext';
-import RadioGroup from '../../components/RadioGroup/RadioGroup';
+import { RadioGroup } from '../../components/RadioGroup';
 import { TableLimit } from '../../components/TableLimit/component';
 import { TableSearch } from '../../components/TableSearch';
-import { createDisposable, WithDisposable } from "../../models/features/disposable";
-import { createSelect, Select } from "../../models/select";
+import { createDisposable, Disposable } from "../../models/features/disposable";
 import { createSelectOption, SelectOption } from "../../models/selectOption";
-import { createLimit, WithLimit } from '../../components/TableLimit';
-import { createSearch, WithSearch } from '../../components/TableSearch/model';
-import { createDisableable, WithDisableable } from '../../models/features/disableable';
+import { createLimit, Limit } from '../../components/TableLimit';
+import { createSearch, Search } from '../../components/TableSearch/model';
+import { createDisableable, Disableable } from '../../models/features/disableable';
 import { Observer } from 'mobx-react-lite';
 import { Modal } from '../../components/Modal';
 import PeriodForm from '../../components/PeriodForm';
+import { createDisplayable } from '../../models/features/displayable';
+import { createSelectable } from '../../models/features/selectable';
+import { createOptionable } from '../../models/features/optionable';
+import { createSelectRadio, SelectRadio } from '../../components/RadioGroup/model';
 
 type AppModel =
   & {
     showModal: () => void
   }
   & Readonly<
-    & WithDisposable
-    & WithDisableable
-    & WithLimit
-    & WithSearch
+    & With<Disposable>
+    & With<Disableable>
+    & With<Limit>
+    & With<Search>
     & {
-      radioGroup: Select<SelectOption<boolean>>,
+      radioGroup: Instance<SelectRadio<Instance<SelectOption<boolean>>>>,
       modals: unknown[]
     }
   >
@@ -45,6 +48,7 @@ const createAppModel = (): AppModel => {
   internals.limit = createLimit({
     disableable: (internals as AppModel).disableable
   });
+  console.log(internals.limit)
   internals.search = createSearch({
     disableable: (internals as AppModel).disableable
   });
@@ -58,14 +62,16 @@ const createAppModel = (): AppModel => {
       value: true
     }
   ].map((option, index) => createSelectOption({
-    displayable: option,
-    selectable: {
+    displayable: createDisplayable(option),
+    selectable: createSelectable({
       selected: !index
-    }
+    })
   }));
-  internals.radioGroup = createSelect({
+  internals.radioGroup = createSelectRadio({
     selected: radioOptions[0],
-    options: radioOptions,
+    optionable: createOptionable({
+      options: radioOptions
+    }),
   });
   const oldChangeSelected = internals.radioGroup.changeSelected;
   internals.radioGroup.changeSelected = (selected) => {

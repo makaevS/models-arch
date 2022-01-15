@@ -6,35 +6,26 @@ import {
 } from 'react';
 import { Disposable } from './features/disposable';
 
+export type Model = MakeModel<
+  unknown,
+  unknown,
+  unknown,
+  unknown,
+  never,
+  never
+>;
+
 export type Instance<T extends Model> = T['Instance'];
 
 export type Defaults<T extends Model> = T['Defaults'];
 
-export type WithInstance<T extends Model> = T['WithInstance'];
-
-export type WithDefaults<T extends Model> = T['WithDefaults'];
-
-export type Model<
-  InstanceName = unknown,
-  InstanceFields = unknown,
-  InstanceMethods = unknown,
-  InstanceInnerDefaults = unknown,
-  ExcludeChangers extends keyof InstanceFields = never,
-  MandatoryFields extends keyof InstanceFields = never
-> = MakeModel<
-  InstanceName,
-  InstanceFields,
-  InstanceMethods,
-  InstanceInnerDefaults,
-  ExcludeChangers,
-  MandatoryFields
->
+export type With<T extends Model> = T['With'];
 
 export type MakeModel<
   InstanceName,
-  InstanceFields,
-  InstanceMethods,
-  InstanceInnerDefaults extends InnerDefaults<InstanceFields>,
+  InstanceFields = unknown,
+  InstanceMethods = unknown,
+  InstanceDefaults = unknown,
   ExcludeChangers extends keyof InstanceFields = never,
   MandatoryFields extends keyof InstanceFields = never
 > = {
@@ -43,32 +34,58 @@ export type MakeModel<
     InstanceMethods,
     ExcludeChangers
   >;
-  Defaults: MakeInstanceDefault<
+  Defaults: MakeDefaults<
     InstanceFields,
     InstanceMethods,
-    InstanceInnerDefaults,
+    InstanceDefaults,
     ExcludeChangers,
     MandatoryFields
   >;
-  WithInstance: {
+  With: {
     [Field in `${Uncapitalize<string & InstanceName>}`]: Instance<
       MakeModel<
         InstanceName,
         InstanceFields,
         InstanceMethods,
-        InstanceInnerDefaults,
+        InstanceDefaults,
         ExcludeChangers,
         MandatoryFields
       >
     >
-  }
-  WithDefaults: {
-    [Field in `${Uncapitalize<string & InstanceName>}Default`]: Defaults<
-      MakeModel<
-        InstanceName,
+  };
+}
+
+export type ExtendModel<
+  SomeModel extends Model,
+  InstanceFields = unknown,
+  InstanceMethods = unknown,
+  InstanceDefaults = unknown,
+  ExcludeChangers extends keyof InstanceFields = never,
+  MandatoryFields extends keyof InstanceFields = never
+> = {
+  Instance:
+    & Instance<SomeModel>
+    & MakeInstance<
+      InstanceFields,
+      InstanceMethods,
+      ExcludeChangers
+    >;
+  Defaults:
+    & Defaults<SomeModel>
+    & MakeDefaults<
+      InstanceFields,
+      InstanceMethods,
+      InstanceDefaults,
+      ExcludeChangers,
+      MandatoryFields
+    >;
+  With: {
+    [K in keyof With<SomeModel>]: Instance<
+      ExtendModel<
+        SomeModel,
         InstanceFields,
         InstanceMethods,
-        InstanceInnerDefaults,
+        InstanceDefaults,
         ExcludeChangers,
         MandatoryFields
       >
@@ -77,22 +94,22 @@ export type MakeModel<
 }
 
 export type MakeInstance<
-  InstanceFields,
-  InstanceMethods,
+  InstanceFields = unknown,
+  InstanceMethods = unknown,
   ExcludeChangers extends keyof InstanceFields = never
 > =
   & Readonly<InstanceFields>
   & InstanceMethods
   & InstanceChangers<InstanceFields, ExcludeChangers>;
 
-export type MakeInstanceDefault<
+export type MakeDefaults<
   InstanceFields,
-  InstanceMethods,
-  InstanceInnerDefaults extends InnerDefaults<InstanceFields>,
+  InstanceMethods = unknown,
+  InstanceDefaults = unknown,
   ExcludeChangers extends keyof InstanceFields = never,
   MandatoryFields extends keyof InstanceFields = never,
 > =
-  & InstanceInnerDefaults
+  & InstanceDefaults
   & Pick<InstanceFields, MandatoryFields>
   & Partial<
     & Omit<InstanceFields, MandatoryFields>
@@ -101,15 +118,6 @@ export type MakeInstanceDefault<
       & InstanceChangers<InstanceFields, ExcludeChangers>
     >
   >;
-
-export type InnerDefaults<Instance> = {
-  [
-    Field in keyof Instance as
-    Instance[Field] extends Function
-    ? never
-    : `${string & Field}Default`
-  ] ?: unknown
-}
 
 export type InstanceChangers<
   Instance,
@@ -142,8 +150,8 @@ export type ChangeMethods<Instance, Exclude extends keyof Instance = never> = {
 }
 
 export type Internals<
-  SomeModel extends Model,
-  Inst = Instance<SomeModel>
+  Type,
+  Inst = Type extends Model ? Instance<Type> : Type
 > = {
   -readonly [Field in keyof Inst]:
     | Inst[Field]
@@ -197,7 +205,7 @@ export const removeModel = (id: string) => {
  * Passing `false` to `autoDispose` will disable default auto-disposing and return `dispose` function in tuple alongside model instance. It's required to keep model instance intact (cached) regardless of parent component's lifecycle.
  */
 export const useModel = <
-  T extends Partial<WithInstance<Disposable>>,
+  T extends Partial<With<Disposable>>,
   K extends string | undefined
 >(
   create: CreateModel<T>,

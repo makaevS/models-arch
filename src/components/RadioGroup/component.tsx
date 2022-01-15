@@ -1,12 +1,12 @@
 import React from 'react';
 import './component.css';
 import { observer } from 'mobx-react-lite';
-import { Select } from '../../models/select';
 import Radio from '../Radio';
 import { SelectOption } from '../../models/selectOption';
-import { Instance, WithInstance } from '../../models';
+import { Instance, With } from '../../models';
+import { SelectRadio } from './model';
 
-type RadioGroupProps<T> = WithInstance<Select<Instance<SelectOption<T>>>>;
+type RadioGroupProps<T> = With<SelectRadio<Instance<SelectOption<T>>>>;
 
 export const RadioGroup = observer(<T,>({
   select

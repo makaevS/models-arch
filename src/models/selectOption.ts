@@ -1,9 +1,6 @@
 import { makeAutoObservable } from "mobx";
-import { Instance, InstanceDefault, MakeModel, WithInstance, WithInstanceDefault } from ".";
-import {
-  createDisplayable,
-  Displayable,
-} from "./features/displayable";
+import { Instance, Defaults, MakeModel, With } from ".";
+import { Displayable } from "./features/displayable";
 import {
   createSelectable,
   Selectable,
@@ -11,24 +8,22 @@ import {
 
 export type SelectOption<T> = MakeModel<
   'SelectOption',
-  WithInstance<Displayable<T>> & WithInstance<Selectable>,
+  With<Displayable<T>> & With<Selectable>,
   {},
-  & WithInstanceDefault<Displayable<T>>
-  & Partial<WithInstanceDefault<Selectable>>,
-  'displayable' | 'selectable'
+  {},
+  'displayable' | 'selectable',
+  'displayable'
 >;
 
 export const createSelectOption = <T>(
-  params: InstanceDefault<SelectOption<T>>
+  params: Defaults<SelectOption<T>>
 ): Instance<SelectOption<T>> => {
   const {
     displayable,
-    displayableDefault,
     selectable,
-    selectableDefault
   } = params;
   return makeAutoObservable({
-    displayable: displayable ?? createDisplayable(displayableDefault),
-    selectable: selectable ?? createSelectable(selectableDefault)
+    displayable,
+    selectable: selectable ?? createSelectable()
   });
 }

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import {
   Instance,
-  InstanceDefault,
+  Defaults,
   Internals,
   MakeModel
 } from "..";
@@ -15,7 +15,7 @@ export const createDefaultChangeDisabled = (internals: Internals<Disableable>) =
 }
 
 export const createDisableable = (
-  params?: InstanceDefault<Disableable>
+  params?: Defaults<Disableable>
 ): Instance<Disableable> => {
   const {
     disabled = false,

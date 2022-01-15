@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { Instance, InstanceDefault, Internals, MakeModel } from "..";
+import { Instance, Defaults, Internals, MakeModel } from "..";
 
 export type Disposable = MakeModel<'Disposable', {
   disposers: (() => void)[]
@@ -15,7 +15,7 @@ export const createDefaultAdd = (internals: Internals<Disposable>) => (disposer:
 export const createDefaultDispose = (internals: Internals<Disposable>) => () => internals.disposers?.forEach(disposer => disposer())
 
 export const createDisposable = (
-  params?: InstanceDefault<Disposable>
+  params?: Defaults<Disposable>
 ): Instance<Disposable> => {
   const {
     disposers = [],

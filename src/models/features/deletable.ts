@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import {
+  Defaults,
   Instance,
-  InstanceDefault,
   Internals,
   MakeModel
 } from "..";
@@ -10,7 +10,7 @@ export type Deletable = MakeModel<'Deletable', {
   allowDelete: boolean;
   deleted: boolean;
   deleting: boolean;
-}, {}, {}>;
+}>;
 
 export const createDefaultChangeAllowDelete = (
   internals: Internals<Deletable>
@@ -31,7 +31,7 @@ export const createDefaultChangeDeleting = (
 }
 
 export const createDeletable = (
-  params?: InstanceDefault<Deletable>
+  params?: Defaults<Deletable>
 ): Instance<Deletable> => {
   const {
     allowDelete = true,

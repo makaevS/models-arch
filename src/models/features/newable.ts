@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import {
   Instance,
-  InstanceDefault,
+  Defaults,
   Internals,
   MakeModel,
 } from "..";
@@ -15,7 +15,7 @@ export const createDefaultChangeIsNew = (internals: Internals<Newable>) => (valu
 }
 
 export const createNewable = (
-  params?: InstanceDefault<Newable>
+  params?: Defaults<Newable>
 ): Instance<Newable> => {
   const {
     isNew = false,

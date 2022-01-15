@@ -3,7 +3,7 @@ import {
   Internals,
   MakeModel,
   Instance,
-  InstanceDefault
+  Defaults
 } from "..";
 
 export type Displayable<T> = MakeModel<'Displayable', {
@@ -24,7 +24,7 @@ export const createDefaultChangeValue = <T>(
 }
 
 export const createDisplayable = <T>(
-  params: InstanceDefault<Displayable<T>>
+  params: Defaults<Displayable<T>>
 ): Instance<Displayable<T>> => {
   const {
     label = String(params.value),

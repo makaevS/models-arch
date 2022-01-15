@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import {
   Instance,
-  InstanceDefault,
+  Defaults,
   Internals,
   MakeModel,
 } from "..";
@@ -25,7 +25,7 @@ export const createDefaultChangeEditing = (internals: Internals<Editable>) => (v
 }
 
 export const createEditable = (
-  params?: InstanceDefault<Editable>
+  params?: Defaults<Editable>
 ): Instance<Editable> => {
   const {
     allowEdit = true,

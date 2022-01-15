@@ -1,11 +1,10 @@
 import { makeAutoObservable } from "mobx";
 import {
   Instance,
-  InstanceDefault,
+  Defaults,
   Internals,
   MakeModel,
-  WithInstance,
-  WithInstanceDefault,
+  With,
 } from "../../models";
 import {
   createDisableable,
@@ -18,15 +17,12 @@ import {
 
 export type Search = MakeModel<
   'Search',
-  WithInstance<Disableable> & WithInstance<Displayable<string>>,
+  With<Disableable> & With<Displayable<string>>,
   {
     handleChange: (value: string) => void;
     handleSubmit: () => void;
   },
-  Partial<
-    & WithInstanceDefault<Disableable>
-    & WithInstanceDefault<Displayable<string>>
-  >,
+  {},
   'disableable' | 'displayable'
 >;
 
@@ -39,21 +35,17 @@ export const createDefaultHandleSubmit = (model: Internals<Search>) => () => {
 }
 
 export const createSearch = (
-  params?: InstanceDefault<Search>
+  params?: Defaults<Search>
 ): Instance<Search> => {
   const {
     disableable,
-    disableableDefault,
     displayable,
-    displayableDefault,
     createHandleChange = createDefaultHandleChange,
     createHandleSubmit = createDefaultHandleSubmit
   } = params ?? {};
   const internals: Internals<Search> = makeAutoObservable({
-    disableable: disableable ?? createDisableable(disableableDefault),
-    displayable: displayable ?? createDisplayable(
-      displayableDefault ?? { value: '' }
-    ),
+    disableable: disableable ?? createDisableable(),
+    displayable: displayable ?? createDisplayable({ value: '' }),
     handleChange: () => null,
     handleSubmit: () => null
   });
