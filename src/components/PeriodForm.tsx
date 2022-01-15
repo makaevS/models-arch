@@ -1,9 +1,12 @@
 import React from 'react';
 
+type PeriodFormProps = {
+  
+}
+
 const PeriodForm = () => {
   return (
     <form>
-      <h2>Choose period</h2>
       <fieldset>
 
       </fieldset>

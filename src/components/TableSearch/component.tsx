@@ -1,10 +1,11 @@
 import React from 'react';
 import { Observer, observer } from 'mobx-react-lite';
-import { WithSearch } from '../models/tables/search';
+import { Search } from '.';
+import { WithInstance } from '../../models';
 
-type TableSearchProps = WithSearch;
+type TableSearchProps = WithInstance<Search>;
 
-const TableSearch: React.FC<TableSearchProps> = observer(({
+export const TableSearch: React.FC<TableSearchProps> = observer(({
   search
 }) => {
   const {
@@ -41,5 +42,3 @@ const TableSearch: React.FC<TableSearchProps> = observer(({
     </form>
   )
 });
-
-export default TableSearch;

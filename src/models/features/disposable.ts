@@ -1,26 +1,33 @@
 import { makeAutoObservable } from "mobx";
-import { With } from "..";
+import { Instance, InstanceDefault, Internals, MakeModel } from "..";
 
-/**
- * `add` - Function that add disposer to array of disposers.
- * 
- * `dispose` - Function that disposes model and all model's disposers.
- */
-export type Disposable = {
-  /** Function that add disposer to array of disposers. */
-  add(disposer: () => void): void;
-  /** Function that disposes model and all model's disposers. */
-  dispose(): void;
+export type Disposable = MakeModel<'Disposable', {
+  disposers: (() => void)[]
+}, {
+  add: (disposer: () => void) => void;
+  dispose: () => void;
+}, {}, 'disposers'>;
+
+export const createDefaultAdd = (internals: Internals<Disposable>) => (disposer: () => void) => {
+  internals.disposers?.push(disposer);
 }
 
-/** Model that has `Disposable`. */
-export type WithDisposable = With<Disposable, 'disposable'>;
+export const createDefaultDispose = (internals: Internals<Disposable>) => () => internals.disposers?.forEach(disposer => disposer())
 
-/** Function that creates `disposable` observable. */
-export const createDisposable = (): Disposable => {
-  const disposers: (() => void)[] = [];
-  return makeAutoObservable({
-    add: (disposer) => disposers.push(disposer),
-    dispose: () => disposers.forEach(disposer => disposer())
+export const createDisposable = (
+  params?: InstanceDefault<Disposable>
+): Instance<Disposable> => {
+  const {
+    disposers = [],
+    createAdd = createDefaultAdd,
+    createDispose = createDefaultDispose
+  } = params ?? {};
+  const internals: Internals<Disposable> = makeAutoObservable({
+    disposers,
+    add: () => null,
+    dispose: () => null
   });
+  internals.add = createAdd(internals);
+  internals.dispose = createDispose(internals);
+  return internals as Instance<Disposable>;
 }

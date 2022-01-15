@@ -1,40 +1,22 @@
 import { makeAutoObservable } from "mobx";
 import {
-  ChangeMethods,
-  CreateMethods,
+  Instance,
+  InstanceDefault,
   Internals,
-  OmitMethods,
-  With
+  MakeModel,
 } from "..";
 
-export type Newable =
-  & Readonly<NewableFields>
-  & NewableMethods
-
-export type WithNewable = With<Newable, 'newable'>;
-
-export type NewableDefault = Partial<
-  & OmitMethods<Newable>
-  & NewableDefaultMethods
->;
-
-export type WithNewableDefault = With<NewableDefault, 'newableDefault'>;
-
-type NewableFields = {
+export type Newable = MakeModel<'Newable', {
   isNew: boolean;
-};
-
-type NewableMethods = ChangeMethods<NewableFields>;
-
-type NewableDefaultMethods = CreateMethods<Newable>;
+}, {}, {}>;
 
 export const createDefaultChangeIsNew = (internals: Internals<Newable>) => (value: boolean) => {
   internals.isNew = value;
 }
 
 export const createNewable = (
-  params?: NewableDefault
-): Newable => {
+  params?: InstanceDefault<Newable>
+): Instance<Newable> => {
   const {
     isNew = false,
     createChangeIsNew = createDefaultChangeIsNew
@@ -44,5 +26,5 @@ export const createNewable = (
     changeIsNew: () => null
   });
   internals.changeIsNew = createChangeIsNew(internals);
-  return internals as Newable;
+  return internals as Instance<Newable>;
 }

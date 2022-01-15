@@ -1,8 +1,9 @@
 import React from 'react';
 import { Observer, observer } from 'mobx-react-lite';
-import { WithSelectOption } from '../models/selectOption';
+import { SelectOption } from '../models/selectOption';
+import { WithInstance } from '../models';
 
-type RadioProps<T> = WithSelectOption<T>;
+type RadioProps<T> = WithInstance<SelectOption<T>>;
 
 const Radio = observer(<T,>({ selectOption }: RadioProps<T>) => {
   const {

@@ -1,34 +1,14 @@
 import { makeAutoObservable } from "mobx";
 import {
-  ChangeMethods,
-  CreateMethods,
-  Internals,
-  OmitMethods,
-  With
+  Instance,
+  InstanceDefault,
+  Internals, MakeModel,
 } from "..";
 
-export type Expandable = 
-  & Readonly<ExpandableFields>
-  & ExpandableMethods;
-
-export type WithExpandable = With<Expandable, 'expandable'>;
-
-export type ExpandableDefault = Partial<
-  & OmitMethods<Expandable>
-  & ExpandableDefaultMethods
->;
-
-export type WithExpandableDefault =
-  With<ExpandableDefault, 'expandableDefault'>;
-
-type ExpandableFields = {
+export type Expandable = MakeModel<'Expandable', {
   allowExpand: boolean;
   expanded: boolean;
-};
-
-type ExpandableMethods = ChangeMethods<ExpandableFields>;
-
-type ExpandableDefaultMethods = CreateMethods<Expandable>;
+}, {}, {}>;
 
 export const createDefaultChangeAllowExpand = (internals: Internals<Expandable>) => (value: boolean) => {
   internals.allowExpand = value;
@@ -39,8 +19,8 @@ export const createDefaultChangeExpanded = (internals: Internals<Expandable>) =>
 }
 
 export const createExpandable = (
-  params?: ExpandableDefault
-): Expandable => {
+  params?: InstanceDefault<Expandable>
+): Instance<Expandable> => {
   const {
     allowExpand = true,
     expanded = false,
@@ -55,5 +35,5 @@ export const createExpandable = (
   });
   internals.changeAllowExpand = createChangeAllowExpand(internals);
   internals.changeExpanded = createChangeExpanded(internals);
-  return internals as Expandable;
+  return internals as Instance<Expandable>;
 }

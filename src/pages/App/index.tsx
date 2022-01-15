@@ -4,17 +4,17 @@ import logo from './logo.svg';
 import { makeAutoObservable, reaction } from "mobx";
 import { Internals, useModel } from '../../models';
 import { PageProvider } from '../../models/pageContext';
-import RadioGroup from '../../components/RadioGroup';
-import TableLimit from '../../components/TableLimit';
-import TableSearch from '../../components/TableSearch';
+import RadioGroup from '../../components/RadioGroup/RadioGroup';
+import { TableLimit } from '../../components/TableLimit/component';
+import { TableSearch } from '../../components/TableSearch';
 import { createDisposable, WithDisposable } from "../../models/features/disposable";
 import { createSelect, Select } from "../../models/select";
 import { createSelectOption, SelectOption } from "../../models/selectOption";
-import { createLimit, WithLimit } from '../../models/tables/limit';
-import { createSearch, WithSearch } from '../../models/tables/search';
+import { createLimit, WithLimit } from '../../components/TableLimit';
+import { createSearch, WithSearch } from '../../components/TableSearch/model';
 import { createDisableable, WithDisableable } from '../../models/features/disableable';
 import { Observer } from 'mobx-react-lite';
-import Modal from '../../components/Modal';
+import { Modal } from '../../components/Modal';
 import PeriodForm from '../../components/PeriodForm';
 
 type AppModel =
@@ -118,18 +118,21 @@ function App() {
           </fieldset>
           <button type='button' onClick={showModal}>show modal</button>
         </header>
-        <Observer>
-          {() => (
-            <>
-              {model.modals.map((modal, index) => (
-                <Modal key={index}>
-                  <PeriodForm />
-                </Modal>
-              ))}
-            </>
-          )}
-        </Observer>
       </div>
+      <Observer>
+        {() => (
+          <>
+            {model.modals.map((modal, index) => (
+              <Modal key={index}>
+                {{
+                  Header: <h2>Choose period</h2>,
+                  Content: <PeriodForm />
+                }}
+              </Modal>
+            ))}
+          </>
+        )}
+      </Observer>
     </PageProvider>
   );
 }

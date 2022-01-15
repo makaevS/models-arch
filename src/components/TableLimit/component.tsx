@@ -1,10 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { WithLimit } from '../models/tables/limit';
+import { Limit } from '.';
+import { WithInstance } from '../../models';
 
-type TableLimitProps = WithLimit;
+type TableLimitProps = WithInstance<Limit>;
 
-const TableLimit: React.FC<TableLimitProps> = observer(({
+export const TableLimit: React.FC<TableLimitProps> = observer(({
   limit
 }) => {
   const {
@@ -13,7 +14,9 @@ const TableLimit: React.FC<TableLimitProps> = observer(({
     },
     select: {
       selected,
-      options
+      optionable: {
+        options
+      }
     },
     handleChange
   } = limit;
@@ -32,5 +35,3 @@ const TableLimit: React.FC<TableLimitProps> = observer(({
     </select>
   )
 });
-
-export default TableLimit;

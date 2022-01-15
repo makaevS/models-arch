@@ -4,54 +4,165 @@ import {
   useCallback,
   useEffect,
 } from 'react';
-import { WithDisposable } from './features/disposable';
+import { Disposable } from './features/disposable';
+
+export type Instance<T extends Model> = T['Instance'];
+
+export type Defaults<T extends Model> = T['Defaults'];
+
+export type WithInstance<T extends Model> = T['WithInstance'];
+
+export type WithDefaults<T extends Model> = T['WithDefaults'];
+
+export type Model<
+  InstanceName = unknown,
+  InstanceFields = unknown,
+  InstanceMethods = unknown,
+  InstanceInnerDefaults = unknown,
+  ExcludeChangers extends keyof InstanceFields = never,
+  MandatoryFields extends keyof InstanceFields = never
+> = MakeModel<
+  InstanceName,
+  InstanceFields,
+  InstanceMethods,
+  InstanceInnerDefaults,
+  ExcludeChangers,
+  MandatoryFields
+>
+
+export type MakeModel<
+  InstanceName,
+  InstanceFields,
+  InstanceMethods,
+  InstanceInnerDefaults extends InnerDefaults<InstanceFields>,
+  ExcludeChangers extends keyof InstanceFields = never,
+  MandatoryFields extends keyof InstanceFields = never
+> = {
+  Instance: MakeInstance<
+    InstanceFields,
+    InstanceMethods,
+    ExcludeChangers
+  >;
+  Defaults: MakeInstanceDefault<
+    InstanceFields,
+    InstanceMethods,
+    InstanceInnerDefaults,
+    ExcludeChangers,
+    MandatoryFields
+  >;
+  WithInstance: {
+    [Field in `${Uncapitalize<string & InstanceName>}`]: Instance<
+      MakeModel<
+        InstanceName,
+        InstanceFields,
+        InstanceMethods,
+        InstanceInnerDefaults,
+        ExcludeChangers,
+        MandatoryFields
+      >
+    >
+  }
+  WithDefaults: {
+    [Field in `${Uncapitalize<string & InstanceName>}Default`]: Defaults<
+      MakeModel<
+        InstanceName,
+        InstanceFields,
+        InstanceMethods,
+        InstanceInnerDefaults,
+        ExcludeChangers,
+        MandatoryFields
+      >
+    >
+  }
+}
+
+export type MakeInstance<
+  InstanceFields,
+  InstanceMethods,
+  ExcludeChangers extends keyof InstanceFields = never
+> =
+  & Readonly<InstanceFields>
+  & InstanceMethods
+  & InstanceChangers<InstanceFields, ExcludeChangers>;
+
+export type MakeInstanceDefault<
+  InstanceFields,
+  InstanceMethods,
+  InstanceInnerDefaults extends InnerDefaults<InstanceFields>,
+  ExcludeChangers extends keyof InstanceFields = never,
+  MandatoryFields extends keyof InstanceFields = never,
+> =
+  & InstanceInnerDefaults
+  & Pick<InstanceFields, MandatoryFields>
+  & Partial<
+    & Omit<InstanceFields, MandatoryFields>
+    & CreateMethods<
+      & InstanceMethods
+      & InstanceChangers<InstanceFields, ExcludeChangers>
+    >
+  >;
+
+export type InnerDefaults<Instance> = {
+  [
+    Field in keyof Instance as
+    Instance[Field] extends Function
+    ? never
+    : `${string & Field}Default`
+  ] ?: unknown
+}
+
+export type InstanceChangers<
+  Instance,
+  Exclude = never,
+> = {
+  [
+    Field in keyof Instance as
+    Field extends Exclude
+    ? never
+    : `change${Capitalize<string & Field>}`
+  ] -?: (value: Instance[Field]) => void;
+}
 
 export type CreateModel<T> = () => T;
 
-export type CreateMethods<T> = {
-  [K in keyof T as T[K] extends Function
-    ? `create${Capitalize<string & K>}`
-    : never]: (internals: Internals<T>) => T[K]
+export type CreateMethods<Instance> = {
+  [
+    Field in keyof Instance as
+    `create${Capitalize<string & Field>}`
+  ]: (internals: Internals<Model>) => Instance[Field]
 }
 
-export type ChangeMethods<T, N extends keyof T = never> = {
+export type ChangeMethods<Instance, Exclude extends keyof Instance = never> = {
   [
-    K in keyof T as
-    K extends N ?
+    Field in keyof Instance as
+    Field extends Exclude ?
     never
-    : `change${Capitalize<string & K>}`
-  ]-?: (value: T[K]) => void;
+    : `change${Capitalize<string & Field>}`
+  ] -?: (value: Instance[Field]) => void;
 }
 
-export type OmitMethods<T, N extends keyof T = never> = {
-  [
-    K in keyof T as
-    K extends N
-    ? K
-    : T[K] extends Function
-      ? never
-      : K
-  ]: T[K]
-}
-
-export type With<T, K extends string> = {
-  [key in K]: T
-}
-
-export type Internals<T> = {
-  -readonly[K in keyof T]: T[K] | (T[K] extends Function ? (() => null) : null);
+export type Internals<
+  SomeModel extends Model,
+  Inst = Instance<SomeModel>
+> = {
+  -readonly [Field in keyof Inst]:
+    | Inst[Field]
+    | (Inst[Field] extends Function ? (() => null) : null)
 }
 
 const modelsCache = new Map<string, unknown>();
 
 /**
- * @param id Model unique identifier.
+ * @param id Instance unique identifier.
  * @param create Function, that returns model instance.
  * @returns Cached model instance.
  * 
  * Either returns model instance from cache or create new instance, cache and return it.
  */
-export const getModel = <T>(id: string, create: CreateModel<T>) => {
+export const getModel = <T>(
+  id: string,
+  create: CreateModel<T>
+) => {
   const cachedModel = modelsCache.get(id) as T | undefined;
   if(cachedModel) return cachedModel;
   const newModel = create();
@@ -60,9 +171,9 @@ export const getModel = <T>(id: string, create: CreateModel<T>) => {
 }
 
 /**
- * @param id Model unique identifier.
+ * @param id Instance unique identifier.
  * 
- * Removes model from cache.
+ * Removes model instance from cache.
  */
 export const removeModel = (id: string) => {
   modelsCache.delete(id);
@@ -86,7 +197,7 @@ export const removeModel = (id: string) => {
  * Passing `false` to `autoDispose` will disable default auto-disposing and return `dispose` function in tuple alongside model instance. It's required to keep model instance intact (cached) regardless of parent component's lifecycle.
  */
 export const useModel = <
-  T extends Partial<WithDisposable>,
+  T extends Partial<WithInstance<Disposable>>,
   K extends string | undefined
 >(
   create: CreateModel<T>,

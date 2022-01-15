@@ -1,40 +1,25 @@
 import { makeAutoObservable } from "mobx";
 import {
-  ChangeMethods,
-  CreateMethods,
+  Instance,
+  InstanceDefault,
   Internals,
-  OmitMethods,
-  With
+  MakeModel,
 } from "..";
 
-export type Selectable =
-  & Readonly<SelectableFields>
-  & SelectableMethods;
-
-export type WithSelectable = With<Selectable, 'selectable'>;
-
-export type SelectableDefault = Partial<
-  & OmitMethods<Selectable>
-  & SelectableDefaultMethods
->;
-
-export type WithSelectableDefault =
-  With<SelectableDefault, 'selectableDefault'>;
-
-type SelectableFields = {
+export type Selectable = MakeModel<'Selectable', {
   allowSelect: boolean;
   selected: boolean;
-}
+}, {}, {}>;
 
-type SelectableMethods = ChangeMethods<SelectableFields>;
-
-type SelectableDefaultMethods = CreateMethods<Selectable>;
-
-export const createDefaultChangeAllowSelected = (internals: Internals<Selectable>) => (value: boolean) => {
+export const createDefaultChangeAllowSelected = (
+  internals: Internals<Selectable>
+) => (value: boolean) => {
   internals.allowSelect = value;
 }
 
-export const createDefaultChangeSelected = (internals: Internals<Selectable>) => (value: boolean) => {
+export const createDefaultChangeSelected = (
+  internals: Internals<Selectable>
+) => (value: boolean) => {
   if(value){
     if(internals.allowSelect) internals.selected = value;
   } else {
@@ -43,8 +28,8 @@ export const createDefaultChangeSelected = (internals: Internals<Selectable>) =>
 }
 
 export const createSelectable = (
-  params?: SelectableDefault
-): Selectable => {
+  params?: InstanceDefault<Selectable>
+): Instance<Selectable> => {
   const {
     allowSelect = true,
     selected = false,
@@ -59,5 +44,5 @@ export const createSelectable = (
   });
   internals.changeAllowSelect = createChangeAllowSelect(internals);
   internals.changeSelected = createChangeSelected(internals);
-  return internals as Selectable;
+  return internals as Instance<Selectable>;
 };
