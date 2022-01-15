@@ -76,19 +76,13 @@ function App() {
       <div className="App">
         <header>
           <img src={logo} className="App-logo" alt="logo" />
-          <Observer>
-            {() => {
-              const {
-                disabled,
-                changeDisabled
-              } = disableable;
-              return (
-                <button type='button' onClick={() => changeDisabled(!disabled)}>
-                  {disabled ? 'enable' : 'disable'}
-                </button>
-              )
-            }}
-          </Observer>
+          <button type='button' onClick={() => {
+            disableable.changeDisabled(!disableable.disabled)
+          }}>
+            <Observer>
+              {() => <>{disableable.disabled ? 'enable' : 'disable'}</>}
+            </Observer>
+          </button>
           <fieldset>
             <TableLimit limit={limit} />
             <TableSearch search={search} />
