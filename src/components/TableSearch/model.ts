@@ -7,45 +7,45 @@ import {
   With,
 } from "../../models";
 import {
-  createDisableable,
-  Disableable,
-} from "../../models/features/disableable";
+  createCanBeDisabled,
+  CanBeDisabled,
+} from "../../models/features/canBeDisabled";
 import {
-  createDisplayable,
-  Displayable,
-} from "../../models/features/displayable";
+  createCanBeDisplayed,
+  CanBeDisplayed,
+} from "../../models/features/canBeDisplayed";
 
 export type Search = MakeModel<
   'Search',
-  With<Disableable> & With<Displayable<string>>,
+  With<CanBeDisabled> & With<CanBeDisplayed<string>>,
   {
     handleChange: (value: string) => void;
     handleSubmit: () => void;
   },
   {},
-  'disableable' | 'displayable'
+  'canBeDisabled' | 'canBeDisplayed'
 >;
 
 export const createDefaultHandleChange = (model: Internals<Search>) => (value: string) => {
-  model.displayable?.changeLabel(value);
+  model.canBeDisplayed?.changeLabel(value);
 }
 
 export const createDefaultHandleSubmit = (model: Internals<Search>) => () => {
-  model.displayable?.changeValue(model.displayable.label);
+  model.canBeDisplayed?.changeValue(model.canBeDisplayed.label);
 }
 
 export const createSearch = (
   params?: Defaults<Search>
 ): Instance<Search> => {
   const {
-    disableable,
-    displayable,
+    canBeDisabled,
+    canBeDisplayed,
     createHandleChange = createDefaultHandleChange,
     createHandleSubmit = createDefaultHandleSubmit
   } = params ?? {};
   const internals: Internals<Search> = makeAutoObservable({
-    disableable: disableable ?? createDisableable(),
-    displayable: displayable ?? createDisplayable({ value: '' }),
+    canBeDisabled: canBeDisabled ?? createCanBeDisabled(),
+    canBeDisplayed: canBeDisplayed ?? createCanBeDisplayed({ value: '' }),
     handleChange: () => null,
     handleSubmit: () => null
   });

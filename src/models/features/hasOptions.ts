@@ -5,27 +5,27 @@ import {
   Internals, MakeModel
 } from '..';
 
-export type Optionable<T> = MakeModel<'Optionable', {
+export type HasOptions<T> = MakeModel<'HasOptions', {
   options: T[];
 }, {}, {}>;
 
 export const createDefaultChangeOptions = <T>(
-  internals: Internals<Optionable<T>>
+  internals: Internals<HasOptions<T>>
 ) => (value: T[]) => {
   internals.options = value;
 }
 
-export const createOptionable = <T>(
-  params?: Defaults<Optionable<T>>
-): Instance<Optionable<T>> => {
+export const createHasOptions = <T>(
+  params?: Defaults<HasOptions<T>>
+): Instance<HasOptions<T>> => {
   const {
     options = [],
     createChangeOptions = createDefaultChangeOptions
   } = params ?? {};
-  const internals: Internals<Optionable<T>> = makeAutoObservable({
+  const internals: Internals<HasOptions<T>> = makeAutoObservable({
     options,
     changeOptions: () => null
   });
   internals.changeOptions = createChangeOptions(internals);
-  return internals as Instance<Optionable<T>>;
+  return internals as Instance<HasOptions<T>>;
 }

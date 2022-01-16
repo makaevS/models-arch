@@ -9,10 +9,10 @@ export const TableSearch: React.FC<TableSearchProps> = observer(({
   search
 }) => {
   const {
-    disableable: {
+    canBeDisabled: {
       disabled
     },
-    displayable,
+    canBeDisplayed,
     handleChange,
     handleSubmit
   } = search;
@@ -23,7 +23,7 @@ export const TableSearch: React.FC<TableSearchProps> = observer(({
     }}>
       <Observer>
         {() => {
-          const { label } = displayable;
+          const { label } = canBeDisplayed;
           return (
             <input
               disabled={disabled}

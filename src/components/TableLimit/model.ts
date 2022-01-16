@@ -7,10 +7,10 @@ import {
   With,
 } from "../../models";
 import {
-  createDisableable,
-  Disableable,
-} from "../../models/features/disableable";
-import { createOptionable } from "../../models/features/optionable";
+  createCanBeDisabled,
+  CanBeDisabled,
+} from "../../models/features/canBeDisabled";
+import { createHasOptions } from "../../models/features/hasOptions";
 import {
   createSelect,
   Select,
@@ -18,10 +18,10 @@ import {
 
 export type Limit = MakeModel<
   'Limit',
-  With<Disableable> & With<Select<number>>,
+  With<CanBeDisabled> & With<Select<number>>,
   { handleChange: (value: number) => void },
   {},
-  'disableable' | 'select'
+  'canBeDisabled' | 'select'
 >;
 
 export const createDefaultHandleChange = (model: Internals<Limit>) => (value: number): void => {
@@ -37,15 +37,15 @@ export const createLimit = (
   params?: Defaults<Limit>
 ): Instance<Limit> => {
   const {
-    disableable,
+    canBeDisabled,
     select,
     createHandleChange = createDefaultHandleChange
   } = params ?? {};
   const internals: Internals<Limit> = makeAutoObservable({
-    disableable: disableable ?? createDisableable(),
+    canBeDisabled: canBeDisabled ?? createCanBeDisabled(),
     select: select ?? createSelect({
       selected: limitSelectDefault.selected,
-      optionable: createOptionable({
+      hasOptions: createHasOptions({
         options: limitSelectDefault.options
       })
     }),

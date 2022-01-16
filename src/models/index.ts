@@ -4,7 +4,7 @@ import {
   useCallback,
   useEffect,
 } from 'react';
-import { Disposable } from './features/disposable';
+import { CanBeDisposed } from './features/canBeDisposed';
 
 export type Model = MakeModel<
   unknown,
@@ -205,7 +205,7 @@ export const removeModel = (id: string) => {
  * Passing `false` to `autoDispose` will disable default auto-disposing and return `dispose` function in tuple alongside model instance. It's required to keep model instance intact (cached) regardless of parent component's lifecycle.
  */
 export const useModel = <
-  T extends Partial<With<Disposable>>,
+  T extends Partial<With<CanBeDisposed>>,
   K extends string | undefined
 >(
   create: CreateModel<T>,
@@ -219,7 +219,7 @@ export const useModel = <
   }));
 
   const dispose = useCallback(() => {
-    state.model.disposable?.dispose();
+    state.model.canBeDisposed?.dispose();
     if(state.id) removeModel(state.id);
   }, [state])
 

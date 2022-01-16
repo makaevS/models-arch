@@ -6,10 +6,10 @@ import { Internals, useModel, With } from '../../models';
 import { PageProvider } from '../../models/pageContext';
 import { TableLimit } from '../../components/TableLimit/component';
 import { TableSearch } from '../../components/TableSearch';
-import { createDisposable, Disposable } from "../../models/features/disposable";
+import { createCanBeDisposed, CanBeDisposed } from "../../models/features/canBeDisposed";
 import { createLimit, Limit } from '../../components/TableLimit';
 import { createSearch, Search } from '../../components/TableSearch/model';
-import { createDisableable, Disableable } from '../../models/features/disableable';
+import { createCanBeDisabled, CanBeDisabled } from '../../models/features/canBeDisabled';
 import { Observer } from 'mobx-react-lite';
 import { Modal } from '../../components/Modal';
 import PeriodForm from '../../components/PeriodForm';
@@ -19,8 +19,8 @@ type AppModel =
     showModal: () => void
   }
   & Readonly<
-    & With<Disposable>
-    & With<Disableable>
+    & With<CanBeDisposed>
+    & With<CanBeDisabled>
     & With<Limit>
     & With<Search>
     & {
@@ -30,8 +30,8 @@ type AppModel =
 
 const createAppModel = (): AppModel => {
   const internals: Internals<AppModel> = makeAutoObservable({
-    disposable: createDisposable(),
-    disableable: createDisableable(),
+    canBeDisposed: createCanBeDisposed(),
+    canBeDisabled: createCanBeDisabled(),
     limit: null,
     search: null,
     radioGroup: null,
@@ -39,24 +39,24 @@ const createAppModel = (): AppModel => {
     showModal: () => null
   });
   internals.limit = createLimit({
-    disableable: (internals as AppModel).disableable
+    canBeDisabled: (internals as AppModel).canBeDisabled
   });
   internals.search = createSearch({
-    disableable: (internals as AppModel).disableable
+    canBeDisabled: (internals as AppModel).canBeDisabled
   });
   internals.showModal = () => {
     internals.modals?.push({});
   }
   const model = internals as AppModel;
-  model.disposable.add(
+  model.canBeDisposed.add(
     reaction(
       () => model.limit.select.selected,
       (value) => console.log(`Table limit: ${value}`)
     )
   )
-  model.disposable.add(
+  model.canBeDisposed.add(
     reaction(
-      () => model.search.displayable.value,
+      () => model.search.canBeDisplayed.value,
       (value) => console.log(`Table search: ${value}`)
     )
   )
@@ -66,7 +66,7 @@ const createAppModel = (): AppModel => {
 function App() {
   const [ model ] = useModel(createAppModel);
   const {
-    disableable,
+    canBeDisabled,
     limit,
     search,
     showModal
@@ -77,10 +77,10 @@ function App() {
         <header>
           <img src={logo} className="App-logo" alt="logo" />
           <button type='button' onClick={() => {
-            disableable.changeDisabled(!disableable.disabled)
+            canBeDisabled.changeDisabled(!canBeDisabled.disabled)
           }}>
             <Observer>
-              {() => <>{disableable.disabled ? 'enable' : 'disable'}</>}
+              {() => <>{canBeDisabled.disabled ? 'enable' : 'disable'}</>}
             </Observer>
           </button>
           <fieldset>

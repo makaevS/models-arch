@@ -6,33 +6,33 @@ import {
   Defaults
 } from "..";
 
-export type Displayable<T> = MakeModel<'Displayable', {
+export type CanBeDisplayed<T> = MakeModel<'CanBeDisplayed', {
   label: string;
   value: T;
 }, {}, {}, never, 'value'>
 
 export const createDefaultChangeLabel = <T>(
-  internals: Internals<Displayable<T>>
+  internals: Internals<CanBeDisplayed<T>>
 ) => (value: string) => {
   internals.label = value;
 }
 
 export const createDefaultChangeValue = <T>(
-  internals: Internals<Displayable<T>>
+  internals: Internals<CanBeDisplayed<T>>
 ) => (value: T) => {
   internals.value = value;
 }
 
-export const createDisplayable = <T>(
-  params: Defaults<Displayable<T>>
-): Instance<Displayable<T>> => {
+export const createCanBeDisplayed = <T>(
+  params: Defaults<CanBeDisplayed<T>>
+): Instance<CanBeDisplayed<T>> => {
   const {
     label = String(params.value),
     value,
     createChangeLabel = createDefaultChangeLabel,
     createChangeValue = createDefaultChangeValue
   } = params;
-  const internals: Internals<Displayable<T>> = makeAutoObservable({
+  const internals: Internals<CanBeDisplayed<T>> = makeAutoObservable({
     label: label,
     value: value,
     changeLabel: () => null,
@@ -40,5 +40,5 @@ export const createDisplayable = <T>(
   });
   internals.changeLabel = createChangeLabel(internals);
   internals.changeValue = createChangeValue(internals);
-  return internals as Instance<Displayable<T>>;
+  return internals as Instance<CanBeDisplayed<T>>;
 };

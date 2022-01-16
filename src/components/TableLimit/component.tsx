@@ -9,12 +9,12 @@ export const TableLimit: React.FC<TableLimitProps> = observer(({
   limit
 }) => {
   const {
-    disableable: {
+    canBeDisabled: {
       disabled
     },
     select: {
       selected,
-      optionable: {
+      hasOptions: {
         options
       }
     },

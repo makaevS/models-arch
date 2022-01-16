@@ -6,25 +6,25 @@ import {
   MakeModel,
 } from "..";
 
-export type Newable = MakeModel<'Newable', {
+export type CanBeNew = MakeModel<'CanBeNew', {
   isNew: boolean;
 }, {}, {}>;
 
-export const createDefaultChangeIsNew = (internals: Internals<Newable>) => (value: boolean) => {
+export const createDefaultChangeIsNew = (internals: Internals<CanBeNew>) => (value: boolean) => {
   internals.isNew = value;
 }
 
-export const createNewable = (
-  params?: Defaults<Newable>
-): Instance<Newable> => {
+export const createCanBeNew = (
+  params?: Defaults<CanBeNew>
+): Instance<CanBeNew> => {
   const {
     isNew = false,
     createChangeIsNew = createDefaultChangeIsNew
   } = params ?? {};
-  const internals: Internals<Newable> = makeAutoObservable({
+  const internals: Internals<CanBeNew> = makeAutoObservable({
     isNew,
     changeIsNew: () => null
   });
   internals.changeIsNew = createChangeIsNew(internals);
-  return internals as Instance<Newable>;
+  return internals as Instance<CanBeNew>;
 }

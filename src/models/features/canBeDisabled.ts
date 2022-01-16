@@ -6,25 +6,25 @@ import {
   MakeModel
 } from "..";
 
-export type Disableable = MakeModel<'Disableable', {
+export type CanBeDisabled = MakeModel<'CanBeDisabled', {
   disabled: boolean;
 }, {}, {}>;
 
-export const createDefaultChangeDisabled = (internals: Internals<Disableable>) => (value: boolean) => {
+export const createDefaultChangeDisabled = (internals: Internals<CanBeDisabled>) => (value: boolean) => {
   internals.disabled = value;
 }
 
-export const createDisableable = (
-  params?: Defaults<Disableable>
-): Instance<Disableable> => {
+export const createCanBeDisabled = (
+  params?: Defaults<CanBeDisabled>
+): Instance<CanBeDisabled> => {
   const {
     disabled = false,
     createChangeDisabled = createDefaultChangeDisabled
   } = params ?? {};
-  const internals: Internals<Disableable> = makeAutoObservable({
+  const internals: Internals<CanBeDisabled> = makeAutoObservable({
     disabled,
     changeDisabled: () => null
   });
   internals.changeDisabled = createChangeDisabled(internals);
-  return internals as Instance<Disableable>;
+  return internals as Instance<CanBeDisabled>;
 }
