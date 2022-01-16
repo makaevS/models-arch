@@ -38,14 +38,14 @@ export const createSearch = (
   params?: Defaults<Search>
 ): Instance<Search> => {
   const {
-    canBeDisabled,
-    canBeDisplayed,
+    canBeDisabled = () => createCanBeDisabled(),
+    canBeDisplayed = () => createCanBeDisplayed({ value: '' }),
     createHandleChange = createDefaultHandleChange,
     createHandleSubmit = createDefaultHandleSubmit
   } = params ?? {};
   const internals: Internals<Search> = makeAutoObservable({
-    canBeDisabled: canBeDisabled ?? createCanBeDisabled(),
-    canBeDisplayed: canBeDisplayed ?? createCanBeDisplayed({ value: '' }),
+    get canBeDisabled() { return canBeDisabled(); },
+    get canBeDisplayed() { return canBeDisplayed(); },
     handleChange: () => null,
     handleSubmit: () => null
   });

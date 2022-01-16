@@ -18,12 +18,12 @@ export const createCanBeDisposed = (
   params?: Defaults<CanBeDisposed>
 ): Instance<CanBeDisposed> => {
   const {
-    disposers = [],
+    disposers = () => [],
     createAdd = createDefaultAdd,
     createDispose = createDefaultDispose
   } = params ?? {};
   const internals: Internals<CanBeDisposed> = makeAutoObservable({
-    disposers,
+    get disposers() { return disposers(); },
     add: () => null,
     dispose: () => null
   });

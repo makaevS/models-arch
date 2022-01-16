@@ -21,12 +21,12 @@ export const createSelect = <T>(
   params?: Defaults<Select<T>>,
 ): Instance<Select<T>> => {
   const {
-    hasOptions,
-    hasSelected,
+    hasOptions = () => createHasOptions(),
+    hasSelected = () => createHasSelected(),
   } = params ?? {};
   const internals: Internals<Select<T>> = makeAutoObservable({
-    hasOptions: hasOptions ?? createHasOptions(),
-    hasSelected: hasSelected ?? createHasSelected(),
+    get hasOptions() { return hasOptions(); },
+    get hasSelected() { return hasSelected(); },
   });
   return internals as Instance<Select<T>>;
 }

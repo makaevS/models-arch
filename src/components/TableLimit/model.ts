@@ -38,20 +38,20 @@ export const createLimit = (
   params?: Defaults<Limit>
 ): Instance<Limit> => {
   const {
-    canBeDisabled,
-    select,
-    createHandleChange = createDefaultHandleChange
-  } = params ?? {};
-  const internals: Internals<Limit> = makeAutoObservable({
-    canBeDisabled: canBeDisabled ?? createCanBeDisabled(),
-    select: select ?? createSelect({
-      hasSelected: createHasSelected({
+    canBeDisabled = createCanBeDisabled,
+    select = () => createSelect({
+      hasSelected: () => createHasSelected({
         selected: limitSelectDefault.selected
       }),
-      hasOptions: createHasOptions({
+      hasOptions: () => createHasOptions({
         options: limitSelectDefault.options
       })
     }),
+    createHandleChange = createDefaultHandleChange
+  } = params ?? {};
+  const internals: Internals<Limit> = makeAutoObservable({
+    get canBeDisabled() { return canBeDisabled(); },
+    get select() { return select(); },
     handleChange: () => null
   });
   internals.handleChange = createHandleChange(internals);

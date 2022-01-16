@@ -16,7 +16,8 @@ import PeriodForm from '../../components/PeriodForm';
 
 type AppModel =
   & {
-    showModal: () => void
+    showModal: () => void;
+    replaceDisabler: () => void;
   }
   & Readonly<
     & With<CanBeDisposed>
@@ -36,16 +37,20 @@ const createAppModel = (): AppModel => {
     search: null,
     radioGroup: null,
     modals: [],
-    showModal: () => null
+    showModal: () => null,
+    replaceDisabler: () => null,
   });
   internals.limit = createLimit({
-    canBeDisabled: (internals as AppModel).canBeDisabled
+    canBeDisabled: () => (internals as AppModel).canBeDisabled
   });
   internals.search = createSearch({
-    canBeDisabled: (internals as AppModel).canBeDisabled
+    canBeDisabled: () => (internals as AppModel).canBeDisabled
   });
   internals.showModal = () => {
     internals.modals?.push({});
+  };
+  internals.replaceDisabler = () => {
+    internals.canBeDisabled = createCanBeDisabled();
   }
   const model = internals as AppModel;
   model.canBeDisposed.add(
@@ -66,22 +71,35 @@ const createAppModel = (): AppModel => {
 function App() {
   const [ model ] = useModel(createAppModel);
   const {
-    canBeDisabled,
     limit,
     search,
-    showModal
+    showModal,
+    replaceDisabler
   } = model;
   return (
     <PageProvider model={model}>
       <div className="App">
         <header>
           <img src={logo} className="App-logo" alt="logo" />
-          <button type='button' onClick={() => {
-            canBeDisabled.changeDisabled(!canBeDisabled.disabled)
-          }}>
-            <Observer>
-              {() => <>{canBeDisabled.disabled ? 'enable' : 'disable'}</>}
-            </Observer>
+          <Observer>
+            {() => {
+              const {
+                canBeDisabled: {
+                  disabled,
+                  changeDisabled
+                }
+              } = model;
+              return (
+                <button type='button' onClick={() => {
+                  changeDisabled(!disabled)
+                }}>
+                  {disabled ? 'enable' : 'disable'}
+                </button>
+              )
+            }}
+          </Observer>
+          <button type='button' onClick={replaceDisabler}>
+            replace disabler
           </button>
           <fieldset>
             <TableLimit limit={limit} />

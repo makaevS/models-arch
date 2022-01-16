@@ -26,19 +26,19 @@ export type MakeModel<
   InstanceFields = unknown,
   InstanceMethods = unknown,
   InstanceDefaults = unknown,
-  ExcludeChangers extends keyof InstanceFields = never,
+  InnerModels extends keyof InstanceFields = never,
   MandatoryFields extends keyof InstanceFields = never
 > = {
   Instance: MakeInstance<
     InstanceFields,
     InstanceMethods,
-    ExcludeChangers
+    InnerModels
   >;
   Defaults: MakeDefaults<
     InstanceFields,
     InstanceMethods,
     InstanceDefaults,
-    ExcludeChangers,
+    InnerModels,
     MandatoryFields
   >;
   With: {
@@ -48,7 +48,7 @@ export type MakeModel<
         InstanceFields,
         InstanceMethods,
         InstanceDefaults,
-        ExcludeChangers,
+        InnerModels,
         MandatoryFields
       >
     >
@@ -60,7 +60,7 @@ export type ExtendModel<
   InstanceFields = unknown,
   InstanceMethods = unknown,
   InstanceDefaults = unknown,
-  ExcludeChangers extends keyof InstanceFields = never,
+  InnerModels extends keyof InstanceFields = never,
   MandatoryFields extends keyof InstanceFields = never
 > = {
   Instance:
@@ -68,7 +68,7 @@ export type ExtendModel<
     & MakeInstance<
       InstanceFields,
       InstanceMethods,
-      ExcludeChangers
+      InnerModels
     >;
   Defaults:
     & Defaults<SomeModel>
@@ -76,7 +76,7 @@ export type ExtendModel<
       InstanceFields,
       InstanceMethods,
       InstanceDefaults,
-      ExcludeChangers,
+      InnerModels,
       MandatoryFields
     >;
   With: {
@@ -86,7 +86,7 @@ export type ExtendModel<
         InstanceFields,
         InstanceMethods,
         InstanceDefaults,
-        ExcludeChangers,
+        InnerModels,
         MandatoryFields
       >
     >
@@ -96,40 +96,59 @@ export type ExtendModel<
 export type MakeInstance<
   InstanceFields = unknown,
   InstanceMethods = unknown,
-  ExcludeChangers extends keyof InstanceFields = never
+  InnerModels extends keyof InstanceFields = never
 > =
   & Readonly<InstanceFields>
   & InstanceMethods
-  & InstanceChangers<InstanceFields, ExcludeChangers>;
+  & InstanceChangers<InstanceFields, InnerModels>;
 
 export type MakeDefaults<
   InstanceFields,
   InstanceMethods = unknown,
   InstanceDefaults = unknown,
-  ExcludeChangers extends keyof InstanceFields = never,
+  InnerModels extends keyof InstanceFields = never,
   MandatoryFields extends keyof InstanceFields = never,
 > =
   & InstanceDefaults
-  & Pick<InstanceFields, MandatoryFields>
+  & InnerModelsGetters<
+    InstanceFields,
+    InnerModels,
+    keyof Omit<InstanceFields, MandatoryFields>
+  >
+  & Omit<Pick<InstanceFields, MandatoryFields>, InnerModels>
   & Partial<
-    & Omit<InstanceFields, MandatoryFields>
+    & InnerModelsGetters<InstanceFields, InnerModels, MandatoryFields>
+    & Omit<InstanceFields, MandatoryFields | InnerModels>
     & CreateMethods<
       & InstanceMethods
-      & InstanceChangers<InstanceFields, ExcludeChangers>
+      & InstanceChangers<InstanceFields, InnerModels>
     >
   >;
 
 export type InstanceChangers<
-  Instance,
+  InstanceFields,
   Exclude = never,
 > = {
   [
-    Field in keyof Instance as
+    Field in keyof InstanceFields as
     Field extends Exclude
     ? never
     : `change${Capitalize<string & Field>}`
-  ] -?: (value: Instance[Field]) => void;
-}
+  ] -?: (value: InstanceFields[Field]) => void;
+};
+
+export type InnerModelsGetters<
+  InstanceFields,
+  InnerModels extends keyof InstanceFields = never,
+  Exclude extends keyof InstanceFields = never,
+> = {
+  [
+    Field in InnerModels as
+    Field extends Exclude
+    ? never
+    : Field
+  ]: () => InstanceFields[Field]
+};
 
 export type CreateModel<T> = () => T;
 
@@ -138,7 +157,7 @@ export type CreateMethods<Instance> = {
     Field in keyof Instance as
     `create${Capitalize<string & Field>}`
   ]: (internals: Internals<Model>) => Instance[Field]
-}
+};
 
 export type ChangeMethods<Instance, Exclude extends keyof Instance = never> = {
   [
@@ -147,7 +166,7 @@ export type ChangeMethods<Instance, Exclude extends keyof Instance = never> = {
     never
     : `change${Capitalize<string & Field>}`
   ] -?: (value: Instance[Field]) => void;
-}
+};
 
 export type Internals<
   Type,
@@ -156,7 +175,7 @@ export type Internals<
   -readonly [Field in keyof Inst]:
     | Inst[Field]
     | (Inst[Field] extends Function ? (() => null) : null)
-}
+};
 
 const modelsCache = new Map<string, unknown>();
 
