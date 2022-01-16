@@ -13,7 +13,9 @@ export const TableLimit: React.FC<TableLimitProps> = observer(({
       disabled
     },
     select: {
-      selected,
+      hasSelected: {
+        selected
+      },
       hasOptions: {
         options
       }

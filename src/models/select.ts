@@ -7,32 +7,26 @@ import {
   With,
 } from ".";
 import { createHasOptions, HasOptions } from "./features/hasOptions";
+import { createHasSelected, HasSelected } from "./features/hasSelected";
 
 export type Select<T> = MakeModel<
   'Select',
-  { selected?: T } & With<HasOptions<T>>,
+  With<HasSelected<T>> & With<HasOptions<T>>,
   {},
   {},
-  'hasOptions'
+  'hasSelected' | 'hasOptions'
 >;
-
-export const createDefaultChangeSelected = <T>(internals: Internals<Select<T>>) => (value: T | undefined) => {
-  internals.selected = value;
-}
 
 export const createSelect = <T>(
   params?: Defaults<Select<T>>,
 ): Instance<Select<T>> => {
   const {
     hasOptions,
-    selected,
-    createChangeSelected = createDefaultChangeSelected
+    hasSelected,
   } = params ?? {};
   const internals: Internals<Select<T>> = makeAutoObservable({
     hasOptions: hasOptions ?? createHasOptions(),
-    selected,
-    changeSelected: () => null,
+    hasSelected: hasSelected ?? createHasSelected(),
   });
-  internals.changeSelected = createChangeSelected(internals);
   return internals as Instance<Select<T>>;
 }

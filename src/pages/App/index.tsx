@@ -50,7 +50,7 @@ const createAppModel = (): AppModel => {
   const model = internals as AppModel;
   model.canBeDisposed.add(
     reaction(
-      () => model.limit.select.selected,
+      () => model.limit.select.hasSelected.selected,
       (value) => console.log(`Table limit: ${value}`)
     )
   )

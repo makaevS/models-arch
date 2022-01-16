@@ -11,6 +11,7 @@ import {
   CanBeDisabled,
 } from "../../models/features/canBeDisabled";
 import { createHasOptions } from "../../models/features/hasOptions";
+import { createHasSelected } from "../../models/features/hasSelected";
 import {
   createSelect,
   Select,
@@ -25,7 +26,7 @@ export type Limit = MakeModel<
 >;
 
 export const createDefaultHandleChange = (model: Internals<Limit>) => (value: number): void => {
-  if(model.select) model.select.changeSelected(value);
+  if(model.select) model.select.hasSelected.changeSelected(value);
 }
 
 const limitSelectDefault = {
@@ -44,7 +45,9 @@ export const createLimit = (
   const internals: Internals<Limit> = makeAutoObservable({
     canBeDisabled: canBeDisabled ?? createCanBeDisabled(),
     select: select ?? createSelect({
-      selected: limitSelectDefault.selected,
+      hasSelected: createHasSelected({
+        selected: limitSelectDefault.selected
+      }),
       hasOptions: createHasOptions({
         options: limitSelectDefault.options
       })

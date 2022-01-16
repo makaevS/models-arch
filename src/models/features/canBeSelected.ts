@@ -3,24 +3,18 @@ import {
   Instance,
   Defaults,
   Internals,
-  MakeModel,
+  ExtendModel,
 } from "..";
+import { createDefaultChangeSelected, HasSelected } from "./hasSelected";
 
-export type CanBeSelected = MakeModel<'CanBeSelected', {
+export type CanBeSelected = ExtendModel<HasSelected<boolean>, {
   permitSelect: boolean;
-  selected: boolean;
-}, {}, {}>;
+}>;
 
 export const createDefaultChangePermitSelected = (
   internals: Internals<CanBeSelected>
 ) => (value: boolean) => {
   internals.permitSelect = value;
-}
-
-export const createDefaultChangeSelected = (
-  internals: Internals<CanBeSelected>
-) => (value: boolean) => {
-  internals.selected = value;
 }
 
 export const createCanBeSelected = (
