@@ -8,7 +8,7 @@ import {
 
 export type CanBeDisabled = MakeModel<'CanBeDisabled', {
   disabled: boolean;
-}, {}, {}>;
+}>;
 
 export const createDefaultChangeDisabled = (internals: Internals<CanBeDisabled>) => (value: boolean) => {
   internals.disabled = value;

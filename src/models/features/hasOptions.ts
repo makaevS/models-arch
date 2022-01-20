@@ -6,7 +6,7 @@ import {
 
 export type HasOptions<T> = MakeModel<'HasOptions', {
   options: T[];
-}, {}, {}>;
+}>;
 
 export const createDefaultChangeOptions = <T>(
   internals: Internals<HasOptions<T>>

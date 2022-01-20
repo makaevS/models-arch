@@ -10,7 +10,7 @@ export type CanBeEdited = MakeModel<'CanBeEdited', {
   editing: boolean;
   edited: boolean;
   permitEdit: boolean;
-}, {}, {}>;
+}>;
 
 export const createDefaultChangeEdited = (internals: Internals<CanBeEdited>) => (value: boolean) => {
   internals.edited = value;

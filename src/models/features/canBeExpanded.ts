@@ -9,7 +9,7 @@ import {
 export type CanBeExpanded = MakeModel<'CanBeExpanded', {
   permitExpand: boolean;
   expanded: boolean;
-}, {}, {}>;
+}>;
 
 export const createDefaultChangePermitExpand = (internals: Internals<CanBeExpanded>) => (value: boolean) => {
   internals.permitExpand = value;

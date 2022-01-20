@@ -8,7 +8,7 @@ import {
 
 export type CanBeNew = MakeModel<'CanBeNew', {
   isNew: boolean;
-}, {}, {}>;
+}>;
 
 export const createDefaultChangeIsNew = (internals: Internals<CanBeNew>) => (value: boolean) => {
   internals.isNew = value;
@@ -27,4 +27,4 @@ export const createCanBeNew = (
   };
   internals.changeIsNew = createChangeIsNew(internals);
   return makeInstance(internals);
-}
+};
