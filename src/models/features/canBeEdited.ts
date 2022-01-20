@@ -1,9 +1,9 @@
-import { makeAutoObservable } from "mobx";
 import {
   Instance,
   Defaults,
   Internals,
   MakeModel,
+  makeInstance,
 } from "..";
 
 export type CanBeEdited = MakeModel<'CanBeEdited', {
@@ -35,16 +35,16 @@ export const createCanBeEdited = (
     createChangeEditing = createDefaultChangeEditing,
     createChangePermitEdit = createDefaultChangePermitEdit,
   } = params ?? {};
-  const internals: Internals<CanBeEdited> = makeAutoObservable({
+  const internals: Internals<CanBeEdited> = {
     editing,
     edited,
     permitEdit,
     changeEdited: () => null,
     changeEditing: () => null,
     changePermitEdit: () => null,
-  });
+  };
   internals.changeEdited = createChangeEdited(internals);
   internals.changeEditing = createChangeEditing(internals);
   internals.changePermitEdit = createChangePermitEdit(internals);
-  return internals as Instance<CanBeEdited>;
+  return makeInstance(internals);
 };

@@ -1,8 +1,7 @@
-import { makeAutoObservable } from 'mobx';
 import {
   Instance,
   Defaults,
-  Internals, MakeModel
+  Internals, MakeModel, makeInstance
 } from '..';
 
 export type HasOptions<T> = MakeModel<'HasOptions', {
@@ -22,10 +21,10 @@ export const createHasOptions = <T>(
     options = [],
     createChangeOptions = createDefaultChangeOptions
   } = params ?? {};
-  const internals: Internals<HasOptions<T>> = makeAutoObservable({
+  const internals: Internals<HasOptions<T>> = {
     options,
     changeOptions: () => null
-  });
+  };
   internals.changeOptions = createChangeOptions(internals);
-  return internals as Instance<HasOptions<T>>;
+  return makeInstance(internals);
 }

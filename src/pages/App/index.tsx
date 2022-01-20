@@ -30,16 +30,15 @@ type AppModel =
   >
 
 const createAppModel = (): AppModel => {
-  const internals: Internals<AppModel> = makeAutoObservable({
+  const internals: Internals<AppModel> = {
     canBeDisposed: createCanBeDisposed(),
     canBeDisabled: createCanBeDisabled(),
     limit: null,
     search: null,
-    radioGroup: null,
     modals: [],
     showModal: () => null,
     replaceDisabler: () => null,
-  });
+  };
   internals.limit = createLimit({
     canBeDisabled: () => (internals as AppModel).canBeDisabled
   });
@@ -52,7 +51,7 @@ const createAppModel = (): AppModel => {
   internals.replaceDisabler = () => {
     internals.canBeDisabled = createCanBeDisabled();
   }
-  const model = internals as AppModel;
+  const model = makeAutoObservable(internals) as AppModel;
   model.canBeDisposed.add(
     reaction(
       () => model.limit.select.hasSelected.selected,

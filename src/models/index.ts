@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { makeAutoObservable } from 'mobx';
 import {
   useState,
   useCallback,
@@ -259,3 +260,11 @@ export const useModel = <
 
   return [state.model, state.autoDispose ? undefined : dispose];
 }
+
+export const makeInstance = <T extends Model>(
+  internals: Internals<T>,
+  override?: Parameters<typeof makeAutoObservable>[1],
+  options?: Parameters<typeof makeAutoObservable>[2],
+): Instance<T> => makeAutoObservable(
+  internals, override, options
+);

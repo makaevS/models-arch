@@ -1,10 +1,10 @@
-import { makeAutoObservable } from "mobx";
 import {
   Instance,
   Defaults,
   Internals,
   MakeModel,
   With,
+  makeInstance,
 } from "../../models";
 import {
   createCanBeDisabled,
@@ -49,11 +49,11 @@ export const createLimit = (
     }),
     createHandleChange = createDefaultHandleChange
   } = params ?? {};
-  const internals: Internals<Limit> = makeAutoObservable({
+  const internals: Internals<Limit> = {
     get canBeDisabled() { return canBeDisabled(); },
     get select() { return select(); },
     handleChange: () => null
-  });
+  };
   internals.handleChange = createHandleChange(internals);
-  return internals as Instance<Limit>;
+  return makeInstance(internals);
 }

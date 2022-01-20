@@ -1,5 +1,4 @@
-import { makeAutoObservable } from "mobx";
-import { Defaults, Instance, Internals, MakeModel } from "..";
+import { Defaults, Instance, Internals, makeInstance, MakeModel } from "..";
 
 export type HasSelected<T> = MakeModel<'HasSelected', {
   selected: T | undefined;
@@ -18,10 +17,10 @@ export const createHasSelected = <T>(
     selected,
     createChangeSelected = createDefaultChangeSelected
   } = params ?? {};
-  const internals: Internals<HasSelected<T>> = makeAutoObservable({
+  const internals: Internals<HasSelected<T>> = {
     selected,
     changeSelected: () => null
-  });
+  };
   internals.changeSelected = createChangeSelected(internals);
-  return internals as Instance<HasSelected<T>>;
+  return makeInstance(internals);
 }

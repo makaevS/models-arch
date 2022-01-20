@@ -1,5 +1,10 @@
-import { makeAutoObservable } from "mobx";
-import { Instance, Defaults, Internals, MakeModel } from "..";
+import {
+  Instance,
+  Defaults,
+  Internals,
+  MakeModel,
+  makeInstance
+} from "..";
 
 export type CanBeDisposed = MakeModel<'CanBeDisposed', {
   disposers: (() => void)[]
@@ -22,12 +27,12 @@ export const createCanBeDisposed = (
     createAdd = createDefaultAdd,
     createDispose = createDefaultDispose
   } = params ?? {};
-  const internals: Internals<CanBeDisposed> = makeAutoObservable({
+  const internals: Internals<CanBeDisposed> = {
     get disposers() { return disposers(); },
     add: () => null,
     dispose: () => null
-  });
+  };
   internals.add = createAdd(internals);
   internals.dispose = createDispose(internals);
-  return internals as Instance<CanBeDisposed>;
+  return makeInstance(internals);
 }

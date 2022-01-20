@@ -1,9 +1,9 @@
-import { makeAutoObservable } from "mobx";
 import {
   Instance,
   Defaults,
   Internals,
   MakeModel,
+  makeInstance,
 } from "..";
 
 export type CanBeNew = MakeModel<'CanBeNew', {
@@ -21,10 +21,10 @@ export const createCanBeNew = (
     isNew = false,
     createChangeIsNew = createDefaultChangeIsNew
   } = params ?? {};
-  const internals: Internals<CanBeNew> = makeAutoObservable({
+  const internals: Internals<CanBeNew> = {
     isNew,
     changeIsNew: () => null
-  });
+  };
   internals.changeIsNew = createChangeIsNew(internals);
-  return internals as Instance<CanBeNew>;
+  return makeInstance(internals);
 }

@@ -1,9 +1,9 @@
-import { makeAutoObservable } from "mobx";
 import {
   Instance,
   Defaults,
   Internals,
-  MakeModel
+  MakeModel,
+  makeInstance
 } from "..";
 
 export type CanBeDisabled = MakeModel<'CanBeDisabled', {
@@ -21,10 +21,10 @@ export const createCanBeDisabled = (
     disabled = false,
     createChangeDisabled = createDefaultChangeDisabled
   } = params ?? {};
-  const internals: Internals<CanBeDisabled> = makeAutoObservable({
+  const internals: Internals<CanBeDisabled> = {
     disabled,
     changeDisabled: () => null
-  });
+  };
   internals.changeDisabled = createChangeDisabled(internals);
-  return internals as Instance<CanBeDisabled>;
+  return makeInstance(internals);
 }

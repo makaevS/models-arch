@@ -1,8 +1,9 @@
-import { makeAutoObservable } from "mobx";
 import {
   Instance,
   Defaults,
-  Internals, MakeModel,
+  Internals,
+  MakeModel,
+  makeInstance,
 } from "..";
 
 export type CanBeExpanded = MakeModel<'CanBeExpanded', {
@@ -27,13 +28,13 @@ export const createCanBeExpanded = (
     createChangeExpanded = createDefaultChangeExpanded,
     createChangePermitExpand = createDefaultChangePermitExpand,
   } = params ?? {};
-  const internals: Internals<CanBeExpanded> = makeAutoObservable({
+  const internals: Internals<CanBeExpanded> = {
     expanded,
     permitExpand,
     changeExpanded: () => null,
     changePermitExpand: () => null,
-  });
+  };
   internals.changeExpanded = createChangeExpanded(internals);
   internals.changePermitExpand = createChangePermitExpand(internals);
-  return internals as Instance<CanBeExpanded>;
+  return makeInstance(internals);
 }

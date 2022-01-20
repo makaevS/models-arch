@@ -1,9 +1,9 @@
-import { makeAutoObservable } from "mobx";
 import {
   Instance,
   Defaults,
   Internals,
   ExtendModel,
+  makeInstance,
 } from "..";
 import { createDefaultChangeSelected, HasSelected } from "./hasSelected";
 
@@ -26,13 +26,13 @@ export const createCanBeSelected = (
     createChangePermitSelect = createDefaultChangePermitSelected,
     createChangeSelected = createDefaultChangeSelected
   } = params ?? {};
-  const internals: Internals<CanBeSelected> = makeAutoObservable({
+  const internals: Internals<CanBeSelected> = {
     selected,
     permitSelect,
     changeSelected: () => null,
     changePermitSelect: () => null,
-  });
+  };
   internals.changePermitSelect = createChangePermitSelect(internals);
   internals.changeSelected = createChangeSelected(internals);
-  return internals as Instance<CanBeSelected>;
+  return makeInstance(internals);
 };

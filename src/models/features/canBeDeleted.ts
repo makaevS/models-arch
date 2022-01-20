@@ -1,8 +1,8 @@
-import { makeAutoObservable } from "mobx";
 import {
   Defaults,
   Instance,
   Internals,
+  makeInstance,
   MakeModel
 } from "..";
 
@@ -41,16 +41,16 @@ export const createCanBeDeleted = (
     createChangeDeleting = createDefaultChangeDeleting,
     createChangePermitDelete = createDefaultChangePermitDelete,
   } = params ?? {};
-  const internals: Internals<CanBeDeleted> = makeAutoObservable({
+  const internals: Internals<CanBeDeleted> = {
     deleted,
     deleting,
     permitDelete,
     changeDeleted: () => null,
     changeDeleting: () => null,
     changePermitDelete: () => null,
-  });
+  };
   internals.changePermitDelete = createChangePermitDelete(internals);
   internals.changeDeleted = createChangeDeleted(internals);
   internals.changeDeleting = createChangeDeleting(internals);
-  return internals as Instance<CanBeDeleted>;
+  return makeInstance(internals);
 };

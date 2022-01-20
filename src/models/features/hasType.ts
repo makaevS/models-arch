@@ -1,9 +1,9 @@
-import { makeAutoObservable } from "mobx";
 import {
   Instance,
   Defaults,
   Internals,
-  MakeModel
+  MakeModel,
+  makeInstance
 } from "..";
 
 export type HasType<T> = MakeModel<'HasType', {
@@ -21,10 +21,10 @@ export const createHasType = <T>(
     type,
     createChangeType = createDefaultChangeType
   } = params;
-  const internals: Internals<HasType<T>> = makeAutoObservable({
+  const internals: Internals<HasType<T>> = {
     type,
     changeType: () => null
-  });
+  };
   internals.changeType = createChangeType(internals);
-  return internals as Instance<HasType<T>>;
+  return makeInstance(internals);
 }

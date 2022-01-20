@@ -1,9 +1,9 @@
-import { makeAutoObservable } from "mobx";
 import {
   Internals,
   MakeModel,
   Instance,
-  Defaults
+  Defaults,
+  makeInstance
 } from "..";
 
 export type CanBeDisplayed<T> = MakeModel<'CanBeDisplayed', {
@@ -32,13 +32,13 @@ export const createCanBeDisplayed = <T>(
     createChangeLabel = createDefaultChangeLabel,
     createChangeValue = createDefaultChangeValue
   } = params;
-  const internals: Internals<CanBeDisplayed<T>> = makeAutoObservable({
+  const internals: Internals<CanBeDisplayed<T>> = {
     label: label,
     value: value,
     changeLabel: () => null,
     changeValue: () => null
-  });
+  };
   internals.changeLabel = createChangeLabel(internals);
   internals.changeValue = createChangeValue(internals);
-  return internals as Instance<CanBeDisplayed<T>>;
+  return makeInstance(internals);
 };
