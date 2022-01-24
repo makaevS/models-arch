@@ -37,9 +37,11 @@ export const createDefaultHandleSubmit = (model: Internals<Search>) => () => {
 export const createSearch = (
   params?: Defaults<Search>
 ): Instance<Search> => {
+  const innerCanBeDisabled = createCanBeDisabled();
+  const innerCanBeDisplayed = createCanBeDisplayed({ value: '' });
   const {
-    canBeDisabled = () => createCanBeDisabled(),
-    canBeDisplayed = () => createCanBeDisplayed({ value: '' }),
+    canBeDisabled = () => innerCanBeDisabled,
+    canBeDisplayed = () => innerCanBeDisplayed,
     createHandleChange = createDefaultHandleChange,
     createHandleSubmit = createDefaultHandleSubmit
   } = params ?? {};

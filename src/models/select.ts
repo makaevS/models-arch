@@ -20,9 +20,11 @@ export type Select<T> = MakeModel<
 export const createSelect = <T>(
   params?: Defaults<Select<T>>,
 ): Instance<Select<T>> => {
+  const internalOption = createHasOptions<T>();
+  const internalSelected  = createHasSelected<T>();
   const {
-    hasOptions = () => createHasOptions(),
-    hasSelected = () => createHasSelected(),
+    hasOptions = () => internalOption,
+    hasSelected = () => internalSelected,
   } = params ?? {};
   const internals: Internals<Select<T>> = {
     get hasOptions() { return hasOptions(); },

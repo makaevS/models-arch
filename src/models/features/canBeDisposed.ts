@@ -22,8 +22,9 @@ export const createDefaultDispose = (internals: Internals<CanBeDisposed>) => () 
 export const createCanBeDisposed = (
   params?: Defaults<CanBeDisposed>
 ): Instance<CanBeDisposed> => {
+  const internalDisposers: (() => void)[] = [];
   const {
-    disposers = () => [],
+    disposers = () => internalDisposers,
     createAdd = createDefaultAdd,
     createDispose = createDefaultDispose
   } = params ?? {};

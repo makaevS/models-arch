@@ -37,16 +37,18 @@ const limitSelectDefault = {
 export const createLimit = (
   params?: Defaults<Limit>
 ): Instance<Limit> => {
-  const {
-    canBeDisabled = createCanBeDisabled,
-    select = () => createSelect({
-      hasSelected: () => createHasSelected({
-        selected: limitSelectDefault.selected
-      }),
-      hasOptions: () => createHasOptions({
-        options: limitSelectDefault.options
-      })
+  const innerCanBeDisabled = createCanBeDisabled();
+  const innerSelect = createSelect({
+    hasSelected: () => createHasSelected({
+      selected: limitSelectDefault.selected
     }),
+    hasOptions: () => createHasOptions({
+      options: limitSelectDefault.options
+    })
+  });
+  const {
+    canBeDisabled = () => innerCanBeDisabled,
+    select = () => innerSelect,
     createHandleChange = createDefaultHandleChange
   } = params ?? {};
   const internals: Internals<Limit> = {
