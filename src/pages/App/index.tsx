@@ -46,16 +46,17 @@ const createAppModel = (): AppModel => {
     canBeDisabled: () => (internals as AppModel).canBeDisabled,
     createChangeCanBeDisabled
   });
+  internals.replaceDisabler = () => {
+    internals.canBeDisabled = createCanBeDisabled();
+  }
   internals.search = createSearch({
-    // canBeDisabled: () => (internals as AppModel).canBeDisabled,
-    // createChangeCanBeDisabled
+    canBeDisabled: () => (internals as AppModel).canBeDisabled,
+    createChangeCanBeDisabled,
+    createReplaceDisabler: () => internals.replaceDisabler
   });
   internals.showModal = () => {
     internals.modals?.push({});
   };
-  internals.replaceDisabler = () => {
-    internals.canBeDisabled = createCanBeDisabled();
-  }
   const model = makeAutoObservable(internals) as AppModel;
   model.canBeDisposed.add(
     reaction(
