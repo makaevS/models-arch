@@ -296,17 +296,12 @@ export const makeInnerInstancies = <T extends Record<string, () => unknown>>(
   instancies: T
 ) => {
   const memo: Record<string, unknown> = {};
-  for(const key in instancies){
-    memo[key] = null;
-  }
   let accessor = {};
   for(const key in instancies){
+    memo[key] = instancies[key]();
     accessor = {
       ...accessor,
       get [key]() {
-        if(!memo[key]){
-          memo[key] = instancies[key]();
-        }
         return memo[key];
       },
       set [key](value: unknown){
