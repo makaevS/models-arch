@@ -2,7 +2,7 @@ import React from 'react';
 import './index.css';
 import logo from './logo.svg';
 import { makeAutoObservable, reaction } from "mobx";
-import { Internals, useModel, With } from '../../models';
+import { Instance, Internals, useModel, With } from '../../models';
 import { PageProvider } from '../../models/pageContext';
 import { TableLimit } from '../../components/TableLimit/component';
 import { TableSearch } from '../../components/TableSearch';
@@ -39,11 +39,16 @@ const createAppModel = (): AppModel => {
     showModal: () => null,
     replaceDisabler: () => null,
   };
+  const createChangeCanBeDisabled = () => (value: Instance<CanBeDisabled>) => {
+    internals.canBeDisabled = value;
+  };
   internals.limit = createLimit({
-    canBeDisabled: () => (internals as AppModel).canBeDisabled
+    canBeDisabled: () => (internals as AppModel).canBeDisabled,
+    createChangeCanBeDisabled
   });
   internals.search = createSearch({
-    canBeDisabled: () => (internals as AppModel).canBeDisabled
+    // canBeDisabled: () => (internals as AppModel).canBeDisabled,
+    // createChangeCanBeDisabled
   });
   internals.showModal = () => {
     internals.modals?.push({});

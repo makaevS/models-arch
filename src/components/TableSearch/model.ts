@@ -5,6 +5,7 @@ import {
   MakeModel,
   With,
   makeInstance,
+  makeInnerInstancies,
 } from "../../models";
 import {
   createCanBeDisabled,
@@ -21,6 +22,7 @@ export type Search = MakeModel<
   {
     handleChange: (value: string) => void;
     handleSubmit: () => void;
+    replaceDisabler: () => void;
   },
   {},
   'canBeDisabled' | 'canBeDisplayed'
@@ -37,21 +39,40 @@ export const createDefaultHandleSubmit = (model: Internals<Search>) => () => {
 export const createSearch = (
   params?: Defaults<Search>
 ): Instance<Search> => {
-  const innerCanBeDisabled = createCanBeDisabled();
-  const innerCanBeDisplayed = createCanBeDisplayed({ value: '' });
+  const innerInstancies = makeInnerInstancies({
+    canBeDisabled: () => createCanBeDisabled(),
+    canBeDisplayed: () => createCanBeDisplayed({ value: '' })
+  })
   const {
-    canBeDisabled = () => innerCanBeDisabled,
-    canBeDisplayed = () => innerCanBeDisplayed,
+    canBeDisabled = () => innerInstancies.canBeDisabled,
+    canBeDisplayed = () => innerInstancies.canBeDisplayed,
     createHandleChange = createDefaultHandleChange,
-    createHandleSubmit = createDefaultHandleSubmit
+    createHandleSubmit = createDefaultHandleSubmit,
+    createReplaceDisabler = () => () => {
+      innerInstancies.canBeDisabled = createCanBeDisabled();
+    },
+    createChangeCanBeDisabled = () => (value: Instance<CanBeDisabled>) => {
+      innerInstancies.canBeDisabled = value;
+    },
+    createChangeCanBeDisplayed = () => (
+      value: Instance<CanBeDisplayed<string>>
+    ) => {
+      innerInstancies.canBeDisplayed = value;
+    }
   } = params ?? {};
   const internals: Internals<Search> = {
     get canBeDisabled() { return canBeDisabled(); },
     get canBeDisplayed() { return canBeDisplayed(); },
     handleChange: () => null,
-    handleSubmit: () => null
+    handleSubmit: () => null,
+    replaceDisabler: () => null,
+    changeCanBeDisabled: () => null,
+    changeCanBeDisplayed: () => null
   };
   internals.handleChange = createHandleChange(internals);
   internals.handleSubmit = createHandleSubmit(internals);
+  internals.replaceDisabler = createReplaceDisabler(internals);
+  internals.changeCanBeDisabled = createChangeCanBeDisabled(internals);
+  internals.changeCanBeDisplayed = createChangeCanBeDisplayed(internals);
   return makeInstance(internals);
 }
