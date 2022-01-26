@@ -15,8 +15,7 @@ export const TableSearch: React.FC<TableSearchProps> = observer(({
     },
     canBeDisplayed,
     handleChange,
-    handleSubmit,
-    replaceDisabler
+    handleSubmit
   } = search;
   return (
     <form onSubmit={event => {
@@ -43,9 +42,6 @@ export const TableSearch: React.FC<TableSearchProps> = observer(({
       </button>
       <button onClick={() => changeDisabled(!disabled)}>
         {disabled ? 'enable' : 'disable'}
-      </button>
-      <button onClick={replaceDisabler}>
-        replace disabler
       </button>
     </form>
   )

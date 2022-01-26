@@ -17,7 +17,6 @@ import PeriodForm from '../../components/PeriodForm';
 type AppModel =
   & {
     showModal: () => void;
-    replaceDisabler: () => void;
   }
   & Readonly<
     & With<CanBeDisposed>
@@ -37,22 +36,17 @@ const createAppModel = (): AppModel => {
     search: null,
     modals: [],
     showModal: () => null,
-    replaceDisabler: () => null,
   };
   const createChangeCanBeDisabled = () => (value: Instance<CanBeDisabled>) => {
     internals.canBeDisabled = value;
   };
   internals.limit = createLimit({
-    canBeDisabled: () => (internals as AppModel).canBeDisabled,
+    canBeDisabled: (internals as AppModel).canBeDisabled,
     createChangeCanBeDisabled
   });
-  internals.replaceDisabler = () => {
-    internals.canBeDisabled = createCanBeDisabled();
-  }
   internals.search = createSearch({
-    canBeDisabled: () => (internals as AppModel).canBeDisabled,
+    canBeDisabled: (internals as AppModel).canBeDisabled,
     createChangeCanBeDisabled,
-    createReplaceDisabler: () => internals.replaceDisabler
   });
   internals.showModal = () => {
     internals.modals?.push({});
@@ -78,8 +72,7 @@ function App() {
   const {
     limit,
     search,
-    showModal,
-    replaceDisabler
+    showModal
   } = model;
   return (
     <PageProvider model={model}>
@@ -103,9 +96,6 @@ function App() {
               )
             }}
           </Observer>
-          <button type='button' onClick={replaceDisabler}>
-            replace disabler
-          </button>
           <fieldset>
             <TableLimit limit={limit} />
             <TableSearch search={search} />

@@ -12,7 +12,6 @@ export type Model = MakeModel<
   unknown,
   unknown,
   unknown,
-  never,
   never
 >;
 
@@ -22,14 +21,11 @@ export type Defaults<T extends Model> = T['Defaults'];
 
 export type With<T extends Model> = T['With'];
 
-export type InnerInstancies<T extends Model> = T['InnerInstancies'];
-
 export type MakeModel<
   InstanceName,
   InstanceFields = unknown,
   InstanceMethods = unknown,
   InstanceDefaults = unknown,
-  InnerModels extends keyof InstanceFields = never,
   MandatoryFields extends keyof InstanceFields = never
 > = {
   Instance: MakeInstance<
@@ -40,7 +36,6 @@ export type MakeModel<
     InstanceFields,
     InstanceMethods,
     InstanceDefaults,
-    InnerModels,
     MandatoryFields
   >;
   With: {
@@ -50,22 +45,9 @@ export type MakeModel<
         InstanceFields,
         InstanceMethods,
         InstanceDefaults,
-        InnerModels,
         MandatoryFields
       >
     >
-  };
-  InnerInstancies: {
-    [K in InnerModels]: Instance<
-      MakeModel<
-        InstanceName,
-        InstanceFields,
-        InstanceMethods,
-        InstanceDefaults,
-        InnerModels,
-        MandatoryFields
-      >
-    >[K]
   };
 }
 
@@ -74,7 +56,6 @@ export type ExtendModel<
   InstanceFields = unknown,
   InstanceMethods = unknown,
   InstanceDefaults = unknown,
-  InnerModels extends keyof InstanceFields = never,
   MandatoryFields extends keyof InstanceFields = never
 > = {
   Instance:
@@ -89,7 +70,6 @@ export type ExtendModel<
       InstanceFields,
       InstanceMethods,
       InstanceDefaults,
-      InnerModels,
       MandatoryFields
     >;
   With: {
@@ -99,22 +79,9 @@ export type ExtendModel<
         InstanceFields,
         InstanceMethods,
         InstanceDefaults,
-        InnerModels,
         MandatoryFields
       >
     >
-  };
-  InnerInstancies: {
-    [K in InnerModels]: Instance<
-      ExtendModel<
-        SomeModel,
-        InstanceFields,
-        InstanceMethods,
-        InstanceDefaults,
-        InnerModels,
-        MandatoryFields
-      >
-    >[K]
   };
 }
 
@@ -130,19 +97,12 @@ export type MakeDefaults<
   InstanceFields,
   InstanceMethods = unknown,
   InstanceDefaults = unknown,
-  InnerModels extends keyof InstanceFields = never,
   MandatoryFields extends keyof InstanceFields = never,
 > =
   & InstanceDefaults
-  & InnerModelsGetters<
-    InstanceFields,
-    InnerModels,
-    keyof Omit<InstanceFields, MandatoryFields>
-  >
-  & Omit<Pick<InstanceFields, MandatoryFields>, InnerModels>
+  & Pick<InstanceFields, MandatoryFields>
   & Partial<
-    & InnerModelsGetters<InstanceFields, InnerModels, MandatoryFields>
-    & Omit<InstanceFields, MandatoryFields | InnerModels>
+    & Omit<InstanceFields, MandatoryFields>
     & CreateMethods<
       & InstanceMethods
       & InstanceChangers<InstanceFields>
@@ -159,19 +119,6 @@ export type InstanceChangers<
     ? never
     : `change${Capitalize<string & Field>}`
   ] -?: (value: InstanceFields[Field]) => void;
-};
-
-export type InnerModelsGetters<
-  InstanceFields,
-  InnerModels extends keyof InstanceFields = never,
-  Exclude extends keyof InstanceFields = never,
-> = {
-  [
-    Field in InnerModels as
-    Field extends Exclude
-    ? never
-    : Field
-  ]: () => InstanceFields[Field]
 };
 
 export type CreateModel<T> = () => T;
@@ -291,25 +238,3 @@ export const makeInstance = <T extends Model>(
 ): Instance<T> => makeAutoObservable(
   internals, override, options
 );
-
-export const makeInnerInstancies = <T extends Record<string, () => unknown>>(
-  instancies: T
-) => {
-  const memo: Record<string, unknown> = {};
-  let accessor = {};
-  for(const key in instancies){
-    memo[key] = instancies[key]();
-    accessor = {
-      ...accessor,
-      get [key]() {
-        return memo[key];
-      },
-      set [key](value: unknown){
-        memo[key] = value;
-      }
-    }
-  }
-  return makeAutoObservable(accessor) as {
-    [K in keyof T]: ReturnType<T[K]>
-  };
-}

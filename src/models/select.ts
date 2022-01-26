@@ -5,7 +5,6 @@ import {
   MakeModel,
   With,
   makeInstance,
-  makeInnerInstancies,
 } from ".";
 import { createHasOptions, HasOptions } from "./features/hasOptions";
 import { createHasSelected, HasSelected } from "./features/hasSelected";
@@ -21,23 +20,27 @@ export type Select<T> = MakeModel<
 export const createSelect = <T>(
   params?: Defaults<Select<T>>,
 ): Instance<Select<T>> => {
-  const innerInstancies = makeInnerInstancies({
-    hasOptions: () => createHasOptions<T>(),
-    hasSelected: () => createHasSelected<T>()
-  })
+  // const innerInstancies = makeInnerInstancies({
+  //   hasOptions: () => createHasOptions<T>(),
+  //   hasSelected: () => createHasSelected<T>()
+  // })
   const {
-    hasOptions = () => innerInstancies.hasOptions,
-    hasSelected = () => innerInstancies.hasSelected,
-    createChangeHasOptions = () => (value: Instance<HasOptions<T>>) => {
-      innerInstancies.hasOptions = value;
+    hasOptions = createHasOptions<T>(),//() => innerInstancies.hasOptions,
+    hasSelected = createHasSelected<T>(),//() => innerInstancies.hasSelected,
+    createChangeHasOptions = (internals: Internals<Select<T>>) => (
+      value: Instance<HasOptions<T>>
+    ) => {
+      internals.hasOptions = value;
     },
-    createChangeHasSelected = () => (value: Instance<HasSelected<T>>) => {
-      innerInstancies.hasSelected = value;
+    createChangeHasSelected = (internals: Internals<Select<T>>) => (
+      value: Instance<HasSelected<T>>
+    ) => {
+      internals.hasSelected = value;
     }
   } = params ?? {};
   const internals: Internals<Select<T>> = {
-    get hasOptions() { return hasOptions(); },
-    get hasSelected() { return hasSelected(); },
+    hasOptions,
+    hasSelected,
     changeHasOptions: () => null,
     changeHasSelected: () => null
   };

@@ -9,7 +9,7 @@ import {
 export type CanBeDisplayed<T> = MakeModel<'CanBeDisplayed', {
   label: string;
   value: T;
-}, {}, {}, never, 'value'>
+}, {}, {}, 'value'>
 
 export const createDefaultChangeLabel = <T>(
   internals: Internals<CanBeDisplayed<T>>

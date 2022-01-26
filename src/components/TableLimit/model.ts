@@ -5,7 +5,6 @@ import {
   MakeModel,
   With,
   makeInstance,
-  makeInnerInstancies,
 } from "../../models";
 import {
   createCanBeDisabled,
@@ -22,8 +21,7 @@ export type Limit = MakeModel<
   'Limit',
   With<CanBeDisabled> & With<Select<number>>,
   { handleChange: (value: number) => void },
-  {},
-  'canBeDisabled' | 'select'
+  {}
 >;
 
 export const createDefaultHandleChange = (model: Internals<Limit>) => (value: number): void => {
@@ -33,31 +31,31 @@ export const createDefaultHandleChange = (model: Internals<Limit>) => (value: nu
 export const createLimit = (
   params?: Defaults<Limit>
 ): Instance<Limit> => {
-  const innerInstancies = makeInnerInstancies({
-    canBeDisabled: () => createCanBeDisabled(),
-    select: () => createSelect({
-      hasSelected: () => createHasSelected({
+  const {
+    canBeDisabled = createCanBeDisabled(),
+    select = createSelect({
+      hasSelected: createHasSelected({
         selected: 50
       }),
-      hasOptions: () => createHasOptions({
+      hasOptions: createHasOptions({
         options: [10, 25, 50, 75, 100]
       })
-    })
-  })
-  const {
-    canBeDisabled = () => innerInstancies.canBeDisabled,
-    select = () => innerInstancies.select,
+    }),
     createHandleChange = createDefaultHandleChange,
-    createChangeCanBeDisabled = () => (value: Instance<CanBeDisabled>) => {
-      innerInstancies.canBeDisabled = value;
+    createChangeCanBeDisabled = (internals: Internals<Limit>) => (
+      value: Instance<CanBeDisabled>
+    ) => {
+      internals.canBeDisabled = value;
     },
-    createChangeSelect = () => (value: Instance<Select<number>>) => {
-      innerInstancies.select = value;
+    createChangeSelect = (internals: Internals<Limit>) => (
+      value: Instance<Select<number>>
+    ) => {
+      internals.select = value;
     }
   } = params ?? {};
   const internals: Internals<Limit> = {
-    get canBeDisabled() { return canBeDisabled(); },
-    get select() { return select(); },
+    canBeDisabled,
+    select,
     handleChange: () => null,
     changeCanBeDisabled: () => null,
     changeSelect: () => null

@@ -8,7 +8,7 @@ import {
 
 export type HasType<T> = MakeModel<'HasType', {
   type: T
-}, {}, {}, never, 'type'>;
+}, {}, {}, 'type'>;
 
 export const createDefaultChangeType = <T>(internals: Internals<HasType<T>>) => (value: T) => {
   internals.type = value;

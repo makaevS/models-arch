@@ -5,7 +5,6 @@ import {
   MakeModel,
   With,
   makeInstance,
-  makeInnerInstancies,
 } from "../../models";
 import {
   createCanBeDisabled,
@@ -22,10 +21,7 @@ export type Search = MakeModel<
   {
     handleChange: (value: string) => void;
     handleSubmit: () => void;
-    replaceDisabler: () => void;
-  },
-  {},
-  'canBeDisabled' | 'canBeDisplayed'
+  }
 >;
 
 export const createDefaultHandleChange = (model: Internals<Search>) => (value: string) => {
@@ -39,39 +35,32 @@ export const createDefaultHandleSubmit = (model: Internals<Search>) => () => {
 export const createSearch = (
   params?: Defaults<Search>
 ): Instance<Search> => {
-  const innerInstancies = makeInnerInstancies({
-    canBeDisabled: () => createCanBeDisabled(),
-    canBeDisplayed: () => createCanBeDisplayed({ value: '' })
-  })
   const {
-    canBeDisabled = () => innerInstancies.canBeDisabled,
-    canBeDisplayed = () => innerInstancies.canBeDisplayed,
+    canBeDisabled = createCanBeDisabled(),
+    canBeDisplayed = createCanBeDisplayed({ value: '' }),
     createHandleChange = createDefaultHandleChange,
     createHandleSubmit = createDefaultHandleSubmit,
-    createReplaceDisabler = () => () => {
-      innerInstancies.canBeDisabled = createCanBeDisabled();
+    createChangeCanBeDisabled = (internals: Internals<Search>) => (
+      value: Instance<CanBeDisabled>
+    ) => {
+      internals.canBeDisabled = value;
     },
-    createChangeCanBeDisabled = () => (value: Instance<CanBeDisabled>) => {
-      innerInstancies.canBeDisabled = value;
-    },
-    createChangeCanBeDisplayed = () => (
+    createChangeCanBeDisplayed = (internals: Internals<Search>) => (
       value: Instance<CanBeDisplayed<string>>
     ) => {
-      innerInstancies.canBeDisplayed = value;
+      internals.canBeDisplayed = value;
     }
   } = params ?? {};
   const internals: Internals<Search> = {
-    get canBeDisabled() { return canBeDisabled(); },
-    get canBeDisplayed() { return canBeDisplayed(); },
+    canBeDisabled,
+    canBeDisplayed,
     handleChange: () => null,
     handleSubmit: () => null,
-    replaceDisabler: () => null,
     changeCanBeDisabled: () => null,
     changeCanBeDisplayed: () => null
   };
   internals.handleChange = createHandleChange(internals);
   internals.handleSubmit = createHandleSubmit(internals);
-  internals.replaceDisabler = createReplaceDisabler(internals);
   internals.changeCanBeDisabled = createChangeCanBeDisabled(internals);
   internals.changeCanBeDisplayed = createChangeCanBeDisplayed(internals);
   return makeInstance(internals);
