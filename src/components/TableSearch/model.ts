@@ -24,7 +24,12 @@ export type Search = MakeModel<
   }
 >;
 
-export const createDefaultHandleChange = (model: Internals<Search>) => (value: string) => {
+export const createDefaultHandleChange = (model: Internals<Search>) => (
+  value: string
+) => {
+  if(value === '' && model.canBeDisplayed?.value !== value){
+    model.canBeDisplayed?.changeValue(value);
+  }
   model.canBeDisplayed?.changeLabel(value);
 }
 
